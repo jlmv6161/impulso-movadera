@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Hoja de Costeo y Precio — Programa Impulso | Movadera</title>
+<style>
+  :root{
+    --navy:#16334A; --teal:#137A6D; --teal-soft:#E9F4F2; --gold:#B7791F;
+    --ink:#16334A; --muted:#6B7C89; --line:#D8E2E7; --bg:#F4F7F8; --card:#fff;
+    --ok:#137A6D; --bad:#B23A48;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.45;font-size:15px}
+  header{background:var(--navy);color:#fff;padding:20px 26px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+  header h1{margin:0;font-size:1.25rem}
+  header p{margin:3px 0 0;font-size:.82rem;opacity:.75}
+  .btns{display:flex;gap:8px}
+  button{background:var(--teal);color:#fff;border:0;padding:9px 15px;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;font-family:inherit}
+  button.ghost{background:transparent;border:1px solid rgba(255,255,255,.45)}
+  button:hover{filter:brightness(1.08)}
+  .wrap{max-width:960px;margin:0 auto;padding:22px}
+  section{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin-bottom:18px}
+  h2{font-size:1rem;margin:0 0 4px;color:var(--navy)}
+  h2 .num{display:inline-flex;width:26px;height:26px;background:var(--teal);color:#fff;border-radius:50%;align-items:center;justify-content:center;font-size:.82rem;margin-right:9px;vertical-align:middle}
+  .tip{background:var(--teal-soft);border-left:3px solid var(--teal);padding:9px 13px;border-radius:0 8px 8px 0;font-size:.83rem;margin:10px 0 14px;color:#0F5A50}
+  .tip b{color:#0B443C}
+  label{display:block;font-size:.76rem;color:var(--muted);font-weight:700;margin:12px 0 4px;text-transform:uppercase;letter-spacing:.4px}
+  input,select,textarea{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:7px;font-size:.92rem;font-family:inherit;color:var(--ink);background:#fff}
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--teal);outline-offset:-1px}
+  input[readonly]{background:#F0F4F6;font-weight:700;color:var(--navy)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+  .grid4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px}
+  @media(max-width:700px){.grid2,.grid3,.grid4{grid-template-columns:1fr}}
+  table{width:100%;border-collapse:collapse;margin-top:8px}
+  th{font-size:.7rem;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);text-align:left;padding:4px 6px;font-weight:700}
+  td{padding:3px 6px;vertical-align:middle}
+  td input{padding:7px 8px}
+  .n{text-align:right}
+  .del{background:none;color:var(--bad);border:0;font-size:1.1rem;cursor:pointer;padding:0 6px;line-height:1}
+  .add{background:#fff;color:var(--teal);border:1px dashed var(--teal);margin-top:8px;width:100%}
+  .sum{display:flex;justify-content:space-between;padding:9px 6px;border-top:2px solid var(--navy);margin-top:8px;font-weight:700}
+  .sum span:last-child{font-variant-numeric:tabular-nums}
+  .box{background:#F0F4F6;border-radius:9px;padding:14px 16px;margin-top:12px}
+  .box .line{display:flex;justify-content:space-between;padding:5px 0;font-size:.9rem;border-bottom:1px solid var(--line)}
+  .box .line:last-child{border:0}
+  .box .line.big{font-size:1.05rem;font-weight:700;border-top:2px solid var(--navy);border-bottom:0;margin-top:6px;padding-top:10px}
+  .box .line span:last-child{font-variant-numeric:tabular-nums}
+  .verdict{border-radius:10px;padding:15px 18px;color:#fff;font-weight:600;margin-top:14px}
+  .verdict.ok{background:var(--ok)} .verdict.bad{background:var(--bad)}
+  .verdict .sub{display:block;font-weight:400;font-size:.86rem;opacity:.93;margin-top:3px}
+  .formula{font-family:Consolas,monospace;background:var(--navy);color:#B7E4DB;padding:9px 13px;border-radius:7px;font-size:.8rem;margin:8px 0;overflow-x:auto}
+  .warn{color:var(--bad);font-weight:700}
+  @media print{
+    body{background:#fff;font-size:12px}
+    header{background:#fff;color:var(--navy);border-bottom:2px solid var(--navy)}
+    .btns,.add,.del,.tip{display:none!important}
+    section{break-inside:avoid;border:1px solid #999;margin-bottom:10px;padding:10px 14px}
+    input,select{border:0;border-bottom:1px solid #999;border-radius:0}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Hoja de Costeo y Precio</h1>
+    <p>Programa Impulso · Movadera SAC — llena de arriba hacia abajo, los totales se calculan solos</p>
+  </div>
+  <div class="btns">
+    <button onclick="guardar()">💾 Guardar</button>
+    <button class="ghost" onclick="window.print()">🖨 Imprimir</button>
+    <button class="ghost" onclick="limpiar()">Limpiar</button>
+  </div>
+</header>
+
+<div class="wrap">
+
+<!-- 1 -->
+<section>
+  <h2><span class="num">1</span>¿Qué es y para quién?</h2>
+  <div class="tip">Si no puedes contestar estas preguntas todavía no tienes un producto, tienes un dibujo.</div>
+  <div class="grid3">
+    <div><label>Producto</label><input id="f_nombre" placeholder="Repisa flotante 80 cm"></div>
+    <div><label>Autor</label><input id="f_autor" placeholder="Tu nombre"></div>
+    <div><label>Fecha</label><input id="f_fecha" type="date"></div>
+  </div>
+  <div class="grid2">
+    <div><label>¿Quién lo compra?</label><input id="f_quien" placeholder="Persona que alquila depa chico"></div>
+    <div><label>¿Para qué lo usa?</label><input id="f_para" placeholder="Poner adornos sin hacer obra"></div>
+  </div>
+  <div class="grid3">
+    <div><label>Medida máxima</label><input id="f_medida" placeholder="80 × 22 × 20 cm"></div>
+    <div><label>Precio objetivo (S/)</label><input id="f_objetivo" type="number" placeholder="130"></div>
+    <div><label>Canal de venta</label>
+      <select id="f_canal">
+        <option value="directa">Venta directa — margen mínimo 55 %</option>
+        <option value="b2b">B2B recurrente — margen mínimo 45 %</option>
+        <option value="retail">Retail / mayorista — margen mínimo 30 %</option>
+      </select>
+    </div>
+  </div>
+</section>
+
+<!-- 2 -->
+<section>
+  <h2><span class="num">2</span>Tablero — ¿cuántos salen de una plancha?</h2>
+  <div class="tip">
+    <b>Esta es la forma más exacta de costear el material.</b> Dibuja la plancha (2.44 × 2.15 m) en papel
+    cuadriculado, acomoda todas las piezas de tu producto y cuenta cuántos productos <b>completos</b> salen.
+    Así el retazo real de tu diseño ya queda incluido.
+  </div>
+  <div class="formula">Costo de tablero por unidad = precio de la plancha ÷ productos completos que salen de ella</div>
+  <table>
+    <thead><tr><th style="width:38%">Material</th><th class="n">Precio plancha S/</th><th class="n">Productos por plancha</th><th class="n">Costo / unidad</th><th></th></tr></thead>
+    <tbody id="tbTablero"></tbody>
+  </table>
+  <button class="add" onclick="addTablero()">+ Agregar otro tablero</button>
+  <div class="sum"><span>Total tablero por unidad</span><span id="sumTablero">S/ 0.00</span></div>
+</section>
+
+<!-- 3 -->
+<section>
+  <h2><span class="num">3</span>Canto, herrajes e insumos</h2>
+  <div class="tip">
+    <b>El error que más mata propuestas:</b> olvidar lo chico. Cola, tornillos, lija, embalaje y flete
+    suman entre 3 % y 8 % del costo. Si un precio no lo sabes, <b>pregúntalo — no lo inventes</b>.
+    Un ítem que se usa a medias se pone como fracción (0.3 tubo de FIXALL).
+  </div>
+  <table>
+    <thead><tr><th style="width:42%">Ítem</th><th class="n">Cantidad</th><th class="n">Precio unit. S/</th><th class="n">Subtotal</th><th></th></tr></thead>
+    <tbody id="tbItems"></tbody>
+  </table>
+  <datalist id="dlItems">
+    <option value="Tapacanto (ml)"><option value="Bisagra Ducasse 3D (par) — S/ 9"><option value="Corredera telescópica (par) — S/ 10–26">
+    <option value="Tirador"><option value="Soporte oculto / tarugos"><option value="FIXALL Soudal (tubo) — S/ 29">
+    <option value="Sellador acrílico — S/ 12"><option value="Cola / tornillos"><option value="Lija">
+    <option value="Pintura / laca (por m² de cara)"><option value="Thinner 3L — S/ 18"><option value="Waype (kg) — S/ 10">
+    <option value="Embalaje (cartón, film, etiqueta)"><option value="Flete repartido entre el lote">
+  </datalist>
+  <button class="add" onclick="addItem()">+ Agregar ítem</button>
+  <div class="sum"><span>Total canto, herrajes e insumos</span><span id="sumItems">S/ 0.00</span></div>
+</section>
+
+<!-- 4 -->
+<section>
+  <h2><span class="num">4</span>Tiempo — cronometrado, no estimado</h2>
+  <div class="tip">
+    <b>Dos reglas:</b> (1) cronometra la <b>segunda</b> unidad, no la primera — la primera siempre sale
+    lenta porque estás aprendiendo. (2) Si vas a producir en lote, <b>cronometra el lote completo</b> y
+    pon abajo cuántas unidades hiciste: cortar 10 piezas juntas no demora 10 veces lo que una.
+    Muchos productos <b>solo tienen margen si se hacen en lote</b>.
+  </div>
+  <label>¿Cuántas unidades hiciste en la prueba que estás cronometrando?</label>
+  <input id="f_lote" type="number" value="1" style="max-width:200px">
+  <table>
+    <thead><tr><th style="width:52%">Fase</th><th class="n">Minutos del lote</th><th class="n">Min / unidad</th><th></th></tr></thead>
+    <tbody id="tbTiempos"></tbody>
+  </table>
+  <button class="add" onclick="addTiempo()">+ Agregar fase</button>
+  <div class="formula">Días-hombre = minutos por unidad ÷ 480     (un día son 8 horas = 480 minutos)</div>
+  <div class="grid3">
+    <div><label>Minutos por unidad</label><input id="f_minUnid" readonly></div>
+    <div><label>Días-hombre</label><input id="f_diasH" readonly></div>
+    <div><label>Costo día del taller (S/)</label><input id="f_costoDia" type="number" value="120"></div>
+  </div>
+  <div class="tip" style="margin-top:12px">
+    <b>¿Por qué S/ 120 y no S/ 190 como el Cotizador?</b> El Cotizador usa tarifa <b>cargada</b> (mete
+    dentro el alquiler, servicios y Khybanna) porque cotiza proyectos a medida. El base business se
+    produce en <b>tiempo ocioso</b> del taller, cuando esos costos ya se pagaron igual — por eso aquí
+    se cuenta solo la mano de obra, y por eso se exige un margen alto: ese margen es justamente el que
+    tiene que juntar los S/ 16,700 al mes de costos fijos.
+  </div>
+  <div class="sum"><span>Costo de mano de obra por unidad</span><span id="sumMO">S/ 0.00</span></div>
+</section>
+
+<!-- 5 -->
+<section>
+  <h2><span class="num">5</span>Costo directo</h2>
+  <div class="tip">
+    <b>Sobre el IGV:</b> los precios de materiales los pusiste <b>como los pagas, con IGV adentro</b>.
+    El margen, en cambio, se calcula siempre contra el precio de venta <b>SIN IGV</b> (el IGV no es
+    plata de Movadera: se le devuelve a SUNAT). Eso hace que tu margen salga <b>un poco menor que el
+    real</b> — es a propósito: si el producto pasa así, pasa seguro.
+  </div>
+  <div class="formula">COSTO DIRECTO = tablero + canto/herrajes/insumos + mano de obra + 5 % de merma y embalaje</div>
+  <div class="box">
+    <div class="line"><span>Tablero</span><span id="cTablero">S/ 0.00</span></div>
+    <div class="line"><span>Canto, herrajes e insumos</span><span id="cItems">S/ 0.00</span></div>
+    <div class="line"><span>Mano de obra</span><span id="cMO">S/ 0.00</span></div>
+    <div class="line"><span>Merma y embalaje (5 %)</span><span id="cMerma">S/ 0.00</span></div>
+    <div class="line big"><span>COSTO DIRECTO POR UNIDAD</span><span id="cTotal">S/ 0.00</span></div>
+  </div>
+</section>
+
+<!-- 6 -->
+<section>
+  <h2><span class="num">6</span>Precio A — el piso (por costo)</h2>
+  <div class="tip">
+    <b class="warn">Cuidado con esto:</b> no es "costo + 55 %". Eso da 45 % de margen, no 55.
+    <b>Se DIVIDE, no se multiplica.</b> Costo S/ 47 ÷ 0.45 = S/ 104. Si multiplicaras por 1.55 te
+    daría S/ 73 y estarías perdiendo plata sin darte cuenta.
+  </div>
+  <div class="formula">Precio sin IGV = Costo directo ÷ (1 − margen objetivo)     ·     Precio con IGV = Precio sin IGV × 1.18</div>
+  <div class="grid4">
+    <div><label>Margen objetivo</label><input id="f_margenObj" readonly></div>
+    <div><label>Se divide entre</label><input id="f_divisor" readonly></div>
+    <div><label>Precio A sin IGV</label><input id="f_precioAneto" readonly></div>
+    <div><label>Precio A con IGV</label><input id="f_precioA" readonly></div>
+  </div>
+  <div id="notaRetail" class="tip" style="display:none;margin-top:14px">
+    <b>Ojo, vas a retail:</b> el retailer se queda con 40–50 % del precio público. El precio de arriba
+    es <b>lo que te pagan a ti</b>, no lo que ve el cliente en tienda. En tienda costaría
+    aprox. <b id="precioPublicoEst">—</b>. Tu margen se calcula siempre sobre lo que te pagan a ti.
+  </div>
+</section>
+
+<!-- 7 -->
+<section>
+  <h2><span class="num">7</span>Precio B — el techo (por mercado)</h2>
+  <div class="tip">
+    Sal a buscar <b>3 productos parecidos con foto y precio</b> (Sodimac, Promart, Casa Ideas, Mercado
+    Libre, Instagram). Ese es el precio que la gente <b>ya está dispuesta a pagar</b>. El precio no lo
+    inventas tú: ya existe allá afuera.
+  </div>
+  <table>
+    <thead><tr><th style="width:46%">Producto comparable</th><th style="width:30%">Dónde lo viste</th><th class="n">Precio S/</th></tr></thead>
+    <tbody id="tbMercado"></tbody>
+  </table>
+  <div class="grid2">
+    <div><label>Precio promedio del mercado</label><input id="f_mercado" readonly></div>
+    <div><label>¿Por qué el nuestro es mejor? (acabado, herraje, canto)</label><input id="f_mejor" placeholder="Canto grueso y soporte oculto — se nota en la foto"></div>
+  </div>
+  <div class="tip" style="margin-top:12px">
+    <b>Precio C — la prima Movadera:</b> si tu producto se ve claramente mejor que lo que encontraste,
+    puedes pedir <b>20–40 % más</b> que el mercado. Pero solo si <b>se nota en la foto</b>. Si no se
+    nota, no lo cobres.
+  </div>
+</section>
+
+<!-- 8 -->
+<section>
+  <h2><span class="num">8</span>Precio final y resultado</h2>
+  <div class="tip">
+    <b>Redondea hacia arriba y en cifra de venta:</b> S/ 104 → S/ 129, nunca S/ 105 ni hacia abajo.
+    Y recuerda: <b>el precio no baja después.</b> Subir un precio mal puesto es carísimo.
+  </div>
+  <div class="grid3">
+    <div><label>Precio final con IGV (tú decides)</label><input id="f_precioFinal" type="number" placeholder="129"></div>
+    <div><label>Precio sin IGV</label><input id="f_finalNeto" readonly></div>
+    <div><label>Unidades que crees vender al mes</label><input id="f_unid" type="number" value="30"></div>
+  </div>
+  <div class="box">
+    <div class="line"><span>Precio sin IGV</span><span id="rNeto">S/ 0.00</span></div>
+    <div class="line"><span>− Costo directo</span><span id="rCosto">S/ 0.00</span></div>
+    <div class="line big"><span>MARGEN BRUTO</span><span id="rMargen">S/ 0.00</span></div>
+    <div class="line"><span>Margen en %</span><span id="rMargenPct">—</span></div>
+    <div class="line"><span>Tu regalía (3 % del precio sin IGV)</span><span id="rRegalia">S/ 0.00</span></div>
+    <div class="line"><span>Tu regalía al mes (<span id="rUnid">0</span> unidades)</span><span id="rRegaliaMes">S/ 0.00</span></div>
+    <div class="line"><span>Margen para Movadera al mes</span><span id="rMargenMes">S/ 0.00</span></div>
+    <div class="line"><span>Aporte a los costos fijos (S/ 16,700)</span><span id="rFijos">—</span></div>
+  </div>
+  <div id="verdict" class="verdict ok"></div>
+</section>
+
+<!-- 9 -->
+<section>
+  <h2><span class="num">9</span>Antes de entregar</h2>
+  <div class="grid2">
+    <div>
+      <label>Checklist</label>
+      <div id="checklist" style="font-size:.88rem;line-height:2">
+        <label style="text-transform:none;font-size:.88rem;color:var(--ink);font-weight:400;margin:0"><input type="checkbox" style="width:auto;margin-right:8px">La idea está en el tablero con mi nombre y fecha</label>
+        <label style="text-transform:none;font-size:.88rem;color:var(--ink);font-weight:400;margin:0"><input type="checkbox" style="width:auto;margin-right:8px">Dibujo con 3 vistas y medidas en mm</label>
+        <label style="text-transform:none;font-size:.88rem;color:var(--ink);font-weight:400;margin:0"><input type="checkbox" style="width:auto;margin-right:8px">Despiece completo, pieza por pieza</label>
+        <label style="text-transform:none;font-size:.88rem;color:var(--ink);font-weight:400;margin:0"><input type="checkbox" style="width:auto;margin-right:8px">Hice una unidad de prueba y la cronometré</label>
+        <label style="text-transform:none;font-size:.88rem;color:var(--ink);font-weight:400;margin:0"><input type="checkbox" style="width:auto;margin-right:8px">Pregunté los precios que no sabía</label>
+        <label style="text-transform:none;font-size:.88rem;color:var(--ink);font-weight:400;margin:0"><input type="checkbox" style="width:auto;margin-right:8px">Tengo 3 fotos de mercado con precio</label>
+        <label style="text-transform:none;font-size:.88rem;color:var(--ink);font-weight:400;margin:0"><input type="checkbox" style="width:auto;margin-right:8px">Esta hoja está completa y pasa el umbral</label>
+      </div>
+    </div>
+    <div>
+      <label>Notas / qué falta</label>
+      <textarea id="f_notas" rows="8" placeholder="Ej. falta precio del tapacanto; probar si conviene lote de 20"></textarea>
+    </div>
+  </div>
+  <div class="tip" style="margin-top:14px">
+    Entrega esta hoja junto con la <b>Ficha de Propuesta</b> antes de la Ronda Impulso (último viernes
+    del mes). Si te la devuelven, te van a decir <b>el número exacto</b> que tienes que mejorar — la
+    idea sigue siendo tuya.
+  </div>
+</section>
+
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const S = n => 'S/ ' + (isFinite(n)?n:0).toLocaleString('es-PE',{minimumFractionDigits:2,maximumFractionDigits:2});
+const num = el => parseFloat(el.value) || 0;
+const FIJOS = 16700;
+const UMBRAL = {directa:.55, b2b:.45, retail:.30};
+
+const PLANCHAS = [
+  ['Melamina 18 mm blanca', 180], ['Melamina 18 mm blanca RH', 300],
+  ['Melamina 18 mm color', 300], ['Melamina 18 mm color RH', 350],
+  ['Fingerjoint pino', 200], ['Fingerjoint shihuahuaco', 390],
+  ['Retazos / sobrantes', 0], ['Otro (escribir precio)', 0]
+];
+
+/* ---------- filas dinámicas ---------- */
+function addTablero(mat, precio, unid){
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><select class="mat">${PLANCHAS.map(p=>`<option value="${p[1]}">${p[0]}</option>`).join('')}</select></td>
+    <td><input class="prec n" type="number" step="1"></td>
+    <td><input class="uxp n" type="number" step="1" placeholder="10"></td>
+    <td><input class="res n" readonly></td>
+    <td><button class="del" onclick="this.closest('tr').remove();calc()">×</button></td>`;
+  $('tbTablero').appendChild(tr);
+  const sel = tr.querySelector('.mat'), prec = tr.querySelector('.prec');
+  sel.onchange = () => { prec.value = sel.value; calc(); };
+  prec.value = precio !== undefined ? precio : sel.value;
+  if (mat) sel.selectedIndex = mat;
+  if (unid) tr.querySelector('.uxp').value = unid;
+  calc();
+}
+function addItem(desc, cant, prec){
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><input class="d" list="dlItems" placeholder="Tapacanto, bisagra, cola…"></td>
+    <td><input class="c n" type="number" step="0.1" placeholder="1"></td>
+    <td><input class="p n" type="number" step="0.5" placeholder="0"></td>
+    <td><input class="res n" readonly></td>
+    <td><button class="del" onclick="this.closest('tr').remove();calc()">×</button></td>`;
+  $('tbItems').appendChild(tr);
+  if(desc){tr.querySelector('.d').value=desc;tr.querySelector('.c').value=cant;tr.querySelector('.p').value=prec;}
+  calc();
+}
+function addTiempo(fase, min){
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><input class="d" placeholder="Corte, canteado, armado…"></td>
+    <td><input class="m n" type="number" step="1" placeholder="0"></td>
+    <td><input class="res n" readonly></td>
+    <td><button class="del" onclick="this.closest('tr').remove();calc()">×</button></td>`;
+  $('tbTiempos').appendChild(tr);
+  if(fase){tr.querySelector('.d').value=fase; if(min)tr.querySelector('.m').value=min;}
+  calc();
+}
+function addMercado(){
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td><input class="d" placeholder="Repisa flotante 80 cm"></td>
+    <td><input class="w" placeholder="Sodimac / ML"></td>
+    <td><input class="p n" type="number" placeholder="0"></td>`;
+  $('tbMercado').appendChild(tr);
+}
+
+/* ---------- cálculo ---------- */
+function calc(){
+  // tablero
+  let tablero = 0;
+  $('tbTablero').querySelectorAll('tr').forEach(tr=>{
+    const p = num(tr.querySelector('.prec')), u = num(tr.querySelector('.uxp'));
+    const r = u > 0 ? p/u : 0;
+    tr.querySelector('.res').value = S(r); tablero += r;
+  });
+  $('sumTablero').textContent = S(tablero);
+
+  // items
+  let items = 0;
+  $('tbItems').querySelectorAll('tr').forEach(tr=>{
+    const r = num(tr.querySelector('.c')) * num(tr.querySelector('.p'));
+    tr.querySelector('.res').value = S(r); items += r;
+  });
+  $('sumItems').textContent = S(items);
+
+  // tiempos
+  const lote = Math.max(num($('f_lote')), 1);
+  let minUnid = 0;
+  $('tbTiempos').querySelectorAll('tr').forEach(tr=>{
+    const r = num(tr.querySelector('.m'))/lote;
+    tr.querySelector('.res').value = r.toFixed(1); minUnid += r;
+  });
+  const diasH = minUnid/480, mo = diasH * num($('f_costoDia'));
+  $('f_minUnid').value = minUnid.toFixed(1) + ' min';
+  $('f_diasH').value = diasH.toFixed(3);
+  $('sumMO').textContent = S(mo);
+
+  // costo directo
+  const merma = (tablero + items + mo) * 0.05;
+  const costo = tablero + items + mo + merma;
+  $('cTablero').textContent = S(tablero); $('cItems').textContent = S(items);
+  $('cMO').textContent = S(mo); $('cMerma').textContent = S(merma); $('cTotal').textContent = S(costo);
+
+  // precio A
+  const canal = $('f_canal').value, m = UMBRAL[canal], div = 1 - m;
+  const aNeto = costo/div, aBruto = aNeto*1.18;
+  $('f_margenObj').value = (m*100) + ' %';
+  $('f_divisor').value = div.toFixed(2);
+  $('f_precioAneto').value = S(aNeto);
+  $('f_precioA').value = S(aBruto);
+  $('notaRetail').style.display = canal==='retail' ? 'block' : 'none';
+  $('precioPublicoEst').textContent = S(aBruto*1.8) + ' a ' + S(aBruto*2);
+
+  // mercado
+  let sum=0,n=0;
+  $('tbMercado').querySelectorAll('.p').forEach(i=>{ if(num(i)>0){sum+=num(i);n++;} });
+  $('f_mercado').value = n ? S(sum/n) : '— (completa los 3)';
+
+  // final
+  const fin = num($('f_precioFinal')) || aBruto;
+  const neto = fin/1.18, margen = neto - costo, pct = neto ? margen/neto : 0;
+  const reg = neto*0.03, unid = num($('f_unid'));
+  $('f_finalNeto').value = S(neto);
+  $('rNeto').textContent = S(neto); $('rCosto').textContent = '− ' + S(costo);
+  $('rMargen').textContent = S(margen);
+  $('rMargenPct').textContent = (pct*100).toFixed(1) + ' %  (mínimo ' + (m*100) + ' %)';
+  $('rRegalia').textContent = S(reg);
+  $('rUnid').textContent = unid;
+  $('rRegaliaMes').textContent = S(reg*unid);
+  $('rMargenMes').textContent = S((margen-reg)*unid);
+  $('rFijos').textContent = (((margen-reg)*unid)/FIJOS*100).toFixed(0) + ' % de los fijos del mes';
+
+  const v = $('verdict');
+  if (costo <= 0){
+    v.className='verdict ok'; v.innerHTML = 'Completa los pasos 2, 3 y 4 para ver el resultado.';
+  } else if (pct >= m){
+    v.className = 'verdict ok';
+    v.innerHTML = `✓ PASA — margen ${(pct*100).toFixed(1)} %<span class="sub">`+
+      `Movadera se queda con ${S(margen-reg)} por unidad. Tu regalía: ${S(reg)} por unidad, ${S(reg*unid)} al mes. Preséntalo.</span>`;
+  } else {
+    const faltaPrecio = costo/div*1.18, bajaCosto = costo - neto*div;
+    v.className = 'verdict bad';
+    v.innerHTML = `✕ NO PASA — margen ${(pct*100).toFixed(1)} %, se necesita ${(m*100)} %<span class="sub">`+
+      `Tienes dos caminos: subir el precio a ${S(faltaPrecio)} con IGV, o bajar ${S(bajaCosto)} de costo `+
+      `(menos piezas, mejor aprovechamiento de plancha, o lote más grande).</span>`;
+  }
+}
+
+/* ---------- guardar / cargar ---------- */
+const KEY = 'movadera_costeo';
+function estado(){
+  const rows = (tb, cls) => [...$(tb).querySelectorAll('tr')].map(tr=>cls.map(c=>tr.querySelector(c)?.value ?? ''));
+  const campos = {};
+  document.querySelectorAll('input[id^=f_],select[id^=f_],textarea[id^=f_]').forEach(e=>campos[e.id]=e.value);
+  return {campos,
+    tablero: rows('tbTablero',['.mat','.prec','.uxp']),
+    items:   rows('tbItems',['.d','.c','.p']),
+    tiempos: rows('tbTiempos',['.d','.m']),
+    mercado: rows('tbMercado',['.d','.w','.p'])};
+}
+function guardar(){ localStorage.setItem(KEY, JSON.stringify(estado())); alert('Hoja guardada en este navegador.'); }
+function limpiar(){ if(confirm('¿Borrar todo y empezar de nuevo?')){ localStorage.removeItem(KEY); location.reload(); } }
+
+function cargar(){
+  const raw = localStorage.getItem(KEY);
+  if(!raw){ inicial(); return; }
+  const d = JSON.parse(raw);
+  Object.entries(d.campos||{}).forEach(([k,v])=>{ if($(k)) $(k).value = v; });
+  (d.tablero||[]).forEach(r=>{ addTablero(); const tr=$('tbTablero').lastElementChild;
+    tr.querySelector('.mat').value=r[0]; tr.querySelector('.prec').value=r[1]; tr.querySelector('.uxp').value=r[2]; });
+  (d.items||[]).forEach(r=>addItem(r[0],r[1],r[2]));
+  (d.tiempos||[]).forEach(r=>addTiempo(r[0],r[1]));
+  (d.mercado||[]).forEach(r=>{ addMercado(); const tr=$('tbMercado').lastElementChild;
+    tr.querySelector('.d').value=r[0]; tr.querySelector('.w').value=r[1]; tr.querySelector('.p').value=r[2]; });
+  if(!(d.tablero||[]).length) inicial();
+  calc();
+}
+function inicial(){
+  addTablero();
+  ['Tapacanto (ml)','Herrajes / soportes','Cola, tornillos, lija','Embalaje'].forEach(i=>addItem(i,'',''));
+  ['Corte','Canteado','Perforado / ruteo','Armado','Acabado','Lijado y limpieza','Embalaje'].forEach(f=>addTiempo(f));
+  addMercado(); addMercado(); addMercado();
+  $('f_fecha').valueAsDate = new Date();
+}
+
+document.addEventListener('input', calc);
+document.addEventListener('change', calc);
+cargar(); calc();
+</script>
+</body>
+</html>

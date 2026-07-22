@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Calculadora de Regalías — Programa Impulso | Movadera</title>
+<style>
+  :root{
+    --navy:#16334A; --teal:#137A6D; --teal-soft:#E9F4F2; --gold:#B7791F; --gold-soft:#FBF3E2;
+    --ink:#16334A; --muted:#6B7C89; --line:#D8E2E7; --bg:#F4F7F8; --card:#fff;
+    --ok:#137A6D; --warn:#B7791F; --bad:#B23A48;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;font-size:15px}
+  header{background:var(--navy);color:#fff;padding:20px 26px}
+  header h1{margin:0;font-size:1.3rem}
+  header p{margin:4px 0 0;font-size:.84rem;opacity:.78}
+
+  .banner{background:var(--gold-soft);border-bottom:1px solid #E7D5AC;padding:12px 26px;font-size:.86rem;color:#6B5314}
+  .banner b{color:#4A390B}
+  .banner ul{margin:6px 0 0;padding-left:20px}
+  .banner li{margin:2px 0}
+
+  .wrap{max-width:1180px;margin:0 auto;padding:22px;display:grid;grid-template-columns:minmax(300px,370px) 1fr;gap:20px;align-items:start}
+  @media(max-width:900px){.wrap{grid-template-columns:1fr}}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin-bottom:16px}
+  .card h2{margin:0 0 2px;font-size:.74rem;text-transform:uppercase;letter-spacing:1px;color:var(--teal);font-weight:800}
+  .card h2 .sub{display:block;text-transform:none;letter-spacing:0;font-size:.78rem;color:var(--muted);font-weight:400;margin-top:3px}
+
+  label{display:block;font-size:.82rem;color:var(--ink);margin:14px 0 4px;font-weight:600}
+  label .tag{font-size:.66rem;font-weight:800;padding:1px 6px;border-radius:4px;margin-left:6px;vertical-align:1px;letter-spacing:.3px}
+  .tag.con{background:#EDE4CE;color:#6B5314}
+  .tag.sin{background:var(--teal-soft);color:#0F5A50}
+  input,select{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:8px;font-size:.95rem;font-family:inherit;color:var(--ink);background:#fff}
+  input:focus,select:focus{outline:2px solid var(--teal);outline-offset:-1px}
+  .hint{font-size:.75rem;color:var(--muted);margin-top:4px}
+  .live{font-size:.78rem;color:var(--teal);font-weight:700;margin-top:4px}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+  .verdict{border-radius:12px;padding:16px 20px;margin-bottom:16px;color:#fff}
+  .verdict.ok{background:var(--ok)} .verdict.warn{background:var(--warn)} .verdict.bad{background:var(--bad)}
+  .verdict .big{display:block;font-size:1.12rem;font-weight:700;margin-bottom:3px}
+  .verdict .sub{font-size:.87rem;opacity:.94}
+
+  .steps{background:var(--navy);color:#DCEDE9;border-radius:12px;padding:16px 20px;margin-bottom:16px;font-size:.88rem}
+  .steps h3{margin:0 0 10px;font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:#7FD3C4;font-weight:800}
+  .steps .s{display:grid;grid-template-columns:22px 1fr auto;gap:10px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.1);align-items:baseline}
+  .steps .s:last-child{border:0}
+  .steps .i{color:#7FD3C4;font-weight:700;font-size:.78rem}
+  .steps .v{font-variant-numeric:tabular-nums;font-weight:700;color:#fff;white-space:nowrap}
+  .steps .s.key{background:rgba(127,211,196,.13);margin:4px -10px;padding:8px 10px;border-radius:7px;border:0}
+  .steps small{display:block;color:#9FC0BA;font-size:.76rem;font-weight:400}
+
+  .groupTitle{font-size:.7rem;text-transform:uppercase;letter-spacing:1.1px;color:var(--muted);font-weight:800;margin:0 0 8px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:11px;margin-bottom:16px}
+  .kpi{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:10px;padding:11px 13px}
+  .kpi.mes{border-left-color:var(--gold)}
+  .kpi .lbl{font-size:.69rem;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:800}
+  .kpi .val{font-size:1.4rem;font-weight:700;font-variant-numeric:tabular-nums;margin-top:2px;line-height:1.2}
+  .kpi .note{font-size:.72rem;color:var(--muted);margin-top:2px}
+
+  .bar{display:flex;height:36px;border-radius:8px;overflow:hidden;margin:8px 0;border:1px solid var(--line)}
+  .bar div{display:flex;align-items:center;justify-content:center;color:#fff;font-size:.71rem;font-weight:700;overflow:hidden;white-space:nowrap}
+  .legend{display:flex;gap:15px;flex-wrap:wrap;font-size:.76rem;color:var(--muted)}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px}
+
+  ul.checks{padding:0;margin:0;list-style:none}
+  ul.checks li{margin-bottom:9px;font-size:.86rem;display:flex;gap:9px;align-items:flex-start}
+  ul.checks .ic{font-weight:800;flex-shrink:0}
+  .pass{color:var(--ok)} .fail{color:var(--bad)}
+  ul.checks small{display:block;color:var(--muted);font-size:.78rem}
+
+  table{width:100%;border-collapse:collapse;font-size:.88rem}
+  td{padding:7px 0;border-bottom:1px solid var(--line)}
+  td.n{text-align:right;font-variant-numeric:tabular-nums;font-weight:700;white-space:nowrap}
+  tr:last-child td{border-bottom:0}
+  footer{max-width:1180px;margin:0 auto;padding:0 26px 40px;font-size:.78rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<header>
+  <h1>Calculadora de Regalías — Programa Impulso</h1>
+  <p>Para José Luis y el Comité · dice si un producto pasa, cuánto se paga de regalía y qué pasa si el colaborador se va</p>
+</header>
+
+<div class="banner">
+  <b>Cómo leer esta calculadora — 3 reglas:</b>
+  <ul>
+    <li><b>Todo el margen y toda la regalía se calculan SIN IGV.</b> El IGV no es plata de Movadera, se le devuelve a SUNAT. Los campos están marcados <span class="tag con">CON IGV</span> o <span class="tag sin">SIN IGV</span>.</li>
+    <li><b>Los resultados están separados en «por unidad» y «al mes».</b> No los mezcles al comparar.</li>
+    <li>La regalía es <b>3 % = 1.5 % base</b> (sobrevive si el colaborador se va, hasta 36 meses) <b>+ 1.5 % de vinculación</b> (se corta el día que sale).</li>
+  </ul>
+</div>
+
+<div class="wrap">
+  <!-- ══════════ ENTRADAS ══════════ -->
+  <div>
+    <div class="card">
+      <h2>1 · Producto<span class="sub">Solo para identificar la evaluación.</span></h2>
+      <label>Nombre del producto</label>
+      <input id="nombre" type="text" placeholder="Ej. Organizador de escritorio">
+      <label>Autor / proponente</label>
+      <input id="autor" type="text" placeholder="Ej. Carlos Gutiérrez">
+      <label>Canal de venta</label>
+      <select id="canal">
+        <option value="directa">Venta directa al cliente final</option>
+        <option value="b2b">B2B recurrente (cliente que repite)</option>
+        <option value="retail">Retail / mayorista (tienda revende)</option>
+      </select>
+      <div class="hint" id="hintCanal">Margen bruto mínimo exigido: <b>55 %</b>.</div>
+    </div>
+
+    <div class="card">
+      <h2>2 · Precio<span class="sub">Ingresa el precio como se lo cobras al cliente, con IGV incluido. La calculadora le quita el 18 % sola.</span></h2>
+      <label id="lblPvp">Precio de venta al público <span class="tag con">CON IGV</span></label>
+      <input id="pvp" type="number" step="1" value="165">
+      <div class="live" id="livePvp"></div>
+
+      <div id="wrapMayorista" style="display:none">
+        <label>Precio que te paga la tienda <span class="tag con">CON IGV</span></label>
+        <input id="mayorista" type="number" step="1" value="95">
+        <div class="live" id="liveMay"></div>
+        <div class="hint">En retail el margen se calcula sobre <b>lo que te pagan a ti</b>, no sobre el precio de la tienda. La tienda se queda con 40–50 %.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>3 · Costos por unidad<span class="sub">Lo que cuesta fabricar UNA unidad.</span></h2>
+      <label>Materiales <span class="tag con" id="tagMat">CON IGV</span></label>
+      <input id="mat" type="number" step="1" value="22">
+      <div class="hint">Tablero + canto + herrajes + insumos + embalaje.</div>
+
+      <label>Tratamiento del IGV de los costos</label>
+      <select id="modoIgv">
+        <option value="con">Conservador — dejarlos con IGV adentro (recomendado hoy)</option>
+        <option value="sin">Con crédito fiscal — quitarles el IGV (÷ 1.18)</option>
+      </select>
+      <div class="hint" id="hintIgv"></div>
+
+      <div class="row">
+        <div>
+          <label>Días-hombre</label>
+          <input id="dias" type="number" step="0.05" value="0.25">
+        </div>
+        <div>
+          <label>Costo día taller</label>
+          <input id="costoDia" type="number" step="5" value="120">
+        </div>
+      </div>
+      <div class="hint">⚠️ Costo día oficial <b>aún sin definir</b>. Provisional S/ 120 (solo mano de obra — el Cotizador usa S/ 190 porque ahí van cargados alquiler y servicios).</div>
+
+      <label>Merma y embalaje (%)</label>
+      <input id="merma" type="number" step="1" value="5">
+    </div>
+
+    <div class="card">
+      <h2>4 · Volumen y regalía<span class="sub">Para proyectar el mes y chequear los topes.</span></h2>
+      <label>Unidades vendidas <b>y cobradas</b> al mes</label>
+      <input id="unid" type="number" step="1" value="60">
+      <div class="hint">Solo se paga regalía sobre venta cobrada, no sobre pedidos.</div>
+      <div class="row">
+        <div>
+          <label>Regalía base (%)</label>
+          <input id="pctBase" type="number" step="0.5" value="1.5">
+        </div>
+        <div>
+          <label>Vinculación (%)</label>
+          <input id="pctAdic" type="number" step="0.5" value="1.5">
+        </div>
+      </div>
+      <label>Sueldo básico del autor</label>
+      <input id="sueldo" type="number" step="100" value="1800">
+      <div class="hint">Tope: la regalía del mes no puede pasar el <b>50 %</b> de este sueldo.</div>
+    </div>
+  </div>
+
+  <!-- ══════════ RESULTADOS ══════════ -->
+  <div>
+    <div id="verdict" class="verdict ok"><span class="big"></span><span class="sub"></span></div>
+
+    <div class="steps">
+      <h3>Paso a paso del cálculo — una unidad</h3>
+      <div id="pasos"></div>
+    </div>
+
+    <p class="groupTitle">Resultados por unidad · todo sin IGV</p>
+    <div class="kpis">
+      <div class="kpi"><div class="lbl">Margen bruto</div><div class="val" id="kMargen">—</div><div class="note" id="kMargenPct">—</div></div>
+      <div class="kpi"><div class="lbl">Regalía del autor</div><div class="val" id="kReg">—</div><div class="note" id="kRegPct">—</div></div>
+      <div class="kpi"><div class="lbl">Le queda a Movadera</div><div class="val" id="kNeto">—</div><div class="note" id="kNetoPct">—</div></div>
+    </div>
+
+    <p class="groupTitle">Resultados al mes · con <span id="uMes">60</span> unidades vendidas</p>
+    <div class="kpis">
+      <div class="kpi mes"><div class="lbl">Venta del mes</div><div class="val" id="kVentaMes">—</div><div class="note">sin IGV</div></div>
+      <div class="kpi mes"><div class="lbl">Cobra el autor</div><div class="val" id="kRegMes">—</div><div class="note" id="kRegMesNota">—</div></div>
+      <div class="kpi mes"><div class="lbl">Margen para Movadera</div><div class="val" id="kMargenMes">—</div><div class="note" id="kFijos">—</div></div>
+    </div>
+
+    <div class="card">
+      <h2>En qué se va el precio sin IGV<span class="sub">De cada sol que entra (ya sin IGV), cuánto es costo, cuánto regalía y cuánto queda.</span></h2>
+      <div class="bar" id="bar"></div>
+      <div class="legend">
+        <span><i style="background:#94A7B4"></i>Costo directo</span>
+        <span><i style="background:#E0A93B"></i>Regalía del autor</span>
+        <span><i style="background:#137A6D"></i>Margen de Movadera</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Chequeo de los candados<span class="sub">Las 4 reglas del reglamento que protegen el margen.</span></h2>
+      <ul class="checks" id="checks"></ul>
+    </div>
+
+    <div class="card">
+      <h2>¿Y si el colaborador se va?<span class="sub">Montos mensuales, calculados con las unidades de arriba.</span></h2>
+      <table>
+        <tr><td>Mientras trabaja en Movadera <small style="color:var(--muted)">— cobra el 3 % completo</small></td><td class="n" id="sActivo">—</td></tr>
+        <tr><td>Renuncia en buenos términos <small style="color:var(--muted)">— le queda solo el 1.5 % base, y solo hasta cumplir 36 meses desde la primera venta</small></td><td class="n" id="sSale">—</td></tr>
+        <tr><td>Falta grave o se va a competir <small style="color:var(--muted)">— pierde todo</small></td><td class="n">S/ 0.00</td></tr>
+        <tr><td><b>Opción de recompra</b> <small style="color:var(--muted)">— Movadera puede cerrar el tema con un pago único de 12 meses y no volver a liquidarle nada</small></td><td class="n" id="sRecompra">—</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<footer>
+  Reglas completas: <b>02 — Reglamento del Programa Impulso</b> · Cobertura legal: <b>03 — Marco Legal</b> ·
+  Para que el colaborador cotice su producto: <b>hoja-de-costeo.html</b>.
+  Los importes dependen del <b>costo día del taller</b>, aún pendiente de definir.
+</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+const S  = n => 'S/ ' + (isFinite(n)?n:0).toLocaleString('es-PE',{minimumFractionDigits:2,maximumFractionDigits:2});
+const P  = n => (isFinite(n)?n*100:0).toFixed(1) + ' %';
+const FIJOS = 16700;
+const IGV = 1.18;
+
+const CANAL = {
+  directa:{m:.55, txt:'Venta directa: margen bruto mínimo <b>55 %</b>.'},
+  b2b    :{m:.45, txt:'B2B recurrente: margen bruto mínimo <b>45 %</b> (se acepta menos a cambio de volumen y recurrencia).'},
+  retail :{m:.30, txt:'Retail: margen mínimo <b>30 %</b> sobre lo que te paga la tienda, y costo ≤ 30 % del precio público.'}
+};
+
+function calc(){
+  const canal = $('canal').value, U = CANAL[canal];
+  $('hintCanal').innerHTML = U.txt;
+  $('wrapMayorista').style.display = canal==='retail' ? 'block' : 'none';
+  $('lblPvp').innerHTML = (canal==='retail' ? 'Precio público en la tienda' : 'Precio de venta al público')
+                        + ' <span class="tag con">CON IGV</span>';
+
+  // ---- precios ----
+  const pvp   = +$('pvp').value || 0;
+  const cobra = canal==='retail' ? (+$('mayorista').value || 0) : pvp;   // lo que factura Movadera
+  const neto  = cobra / IGV;
+  $('livePvp').textContent = '= ' + S(pvp/IGV) + ' sin IGV';
+  $('liveMay').textContent = '= ' + S(cobra/IGV) + ' sin IGV  ← sobre este número se calcula todo';
+
+  // ---- costos ----
+  const modo = $('modoIgv').value, f = modo==='con' ? 1 : 1/IGV;
+  $('tagMat').className = 'tag ' + (modo==='con' ? 'con' : 'sin');
+  $('tagMat').textContent = modo==='con' ? 'CON IGV' : 'SIN IGV';
+  $('hintIgv').innerHTML = modo==='con'
+    ? 'Los materiales quedan con el IGV que pagaste adentro. El margen sale <b>un poco menor que el real</b>: si pasa así, pasa seguro.'
+    : 'Se les quita el IGV porque la SAC lo recupera como crédito fiscal. Requiere <b>comprar siempre con factura</b>.';
+
+  const mat   = (+$('mat').value || 0) * f;
+  const mo    = (+$('dias').value || 0) * (+$('costoDia').value || 0);
+  const merma = (mat + mo) * ((+$('merma').value || 0)/100);
+  const costo = mat + mo + merma;
+  const margen = neto - costo;
+  const mPct = neto ? margen/neto : 0;
+
+  // ---- regalía ----
+  const pB=(+$('pctBase').value||0)/100, pA=(+$('pctAdic').value||0)/100;
+  let regBase = neto*pB, regAdic = neto*pA, reg = regBase+regAdic;
+  const regTeorica = reg, topeMargen = margen*0.15;
+  let recorte = false;
+  if (margen>0 && reg>topeMargen){ const k=topeMargen/reg; regBase*=k; regAdic*=k; reg=topeMargen; recorte=true; }
+
+  const unid = +$('unid').value || 0;
+  const netoUnit = margen - reg;
+  const ventaMes = neto*unid, regMes = reg*unid, regBaseMes = regBase*unid, margenMes = netoUnit*unid;
+  const sueldo = +$('sueldo').value || 0, topePersona = sueldo*0.5;
+  const excede = regMes > topePersona;
+
+  // ---- paso a paso ----
+  const paso = (i,txt,val,nota) =>
+    `<div class="s${nota==='key'?' key':''}"><span class="i">${i}</span><span>${txt}${nota&&nota!=='key'?`<small>${nota}</small>`:''}</span><span class="v">${val}</span></div>`;
+  $('pasos').innerHTML =
+    paso('1', canal==='retail'?'Precio que te paga la tienda (con IGV)':'Precio de venta (con IGV)', S(cobra)) +
+    paso('2', 'Le quitamos el IGV: ÷ 1.18', S(neto), 'key') +
+    paso('3', 'Costo directo por unidad', '− ' + S(costo),
+         `materiales ${S(mat)} + mano de obra ${S(mo)} + merma ${S(merma)}`) +
+    paso('4', 'Margen bruto', S(margen), `es el ${P(mPct)} del precio sin IGV`) +
+    paso('5', `Regalía del autor: ${((pB+pA)*100).toFixed(1)} % del precio sin IGV`, '− ' + S(reg),
+         recorte ? `recortada del tope: sería ${S(regTeorica)}, se limitó al 15 % del margen`
+                 : (margen>0?`equivale al ${P(reg/margen)} del margen bruto`:'')) +
+    paso('6', 'Le queda a Movadera por unidad', S(netoUnit), 'key');
+
+  // ---- KPIs unidad ----
+  $('kMargen').textContent = S(margen);
+  $('kMargenPct').textContent = P(mPct) + ' del precio sin IGV';
+  $('kReg').textContent = S(reg);
+  $('kRegPct').textContent = margen>0 ? P(reg/margen) + ' del margen bruto' : '—';
+  $('kNeto').textContent = S(netoUnit);
+  $('kNetoPct').textContent = neto ? P(netoUnit/neto) + ' del precio sin IGV' : '—';
+
+  // ---- KPIs mes ----
+  $('uMes').textContent = unid;
+  $('kVentaMes').textContent = S(ventaMes);
+  $('kRegMes').textContent = S(excede ? topePersona : regMes);
+  $('kRegMesNota').textContent = excede
+      ? 'topeado · devengó ' + S(regMes) + ', el resto se difiere'
+      : (sueldo ? P(regMes/sueldo) + ' de su sueldo básico' : '—');
+  $('kMargenMes').textContent = S(margenMes);
+  $('kFijos').textContent = P(margenMes/FIJOS) + ' de los S/ 16,700 de fijos';
+
+  // ---- barra ----
+  const t = Math.max(neto,.01);
+  $('bar').innerHTML = [
+    ['#94A7B4', costo/t, 'Costo ' + P(costo/t)],
+    ['#E0A93B', Math.max(reg,0)/t, reg/t>.06 ? P(reg/t) : ''],
+    ['#137A6D', Math.max(netoUnit,0)/t, 'Movadera ' + P(Math.max(netoUnit,0)/t)]
+  ].map(s=>`<div style="background:${s[0]};width:${(s[1]*100).toFixed(1)}%${s[0]==='#E0A93B'?';color:#3A2C08':''}">${s[2]}</div>`).join('');
+
+  // ---- candados ----
+  const okMargen = mPct >= U.m;
+  const okRetail = canal!=='retail' || (pvp>0 && costo <= pvp/IGV*0.30);
+  const chk = [
+    [okMargen, `Margen mínimo del canal: ${P(U.m)}`,
+      `Obtenido ${P(mPct)} sobre el precio sin IGV.`],
+    [okRetail, 'Regla extra de retail: costo ≤ 30 % del precio público sin IGV',
+      canal==='retail' ? `Precio público ${S(pvp)} = ${S(pvp/IGV)} sin IGV · tu costo es ${pvp?P(costo/(pvp/IGV)):'—'} de eso.` : 'No aplica en este canal.'],
+    [!recorte, 'Tope por producto: la regalía nunca pasa el 15 % del margen bruto',
+      recorte ? `Se activó: la regalía bajó de ${S(regTeorica)} a ${S(reg)} por unidad.`
+              : `Va en ${margen>0?P(reg/margen):'—'} del margen. Sin recorte.`],
+    [!excede, 'Tope por persona: máximo 50 % de su sueldo básico al mes',
+      excede ? `Devengó ${S(regMes)} y el tope es ${S(topePersona)} — el exceso se paga en meses siguientes.`
+             : `Cobraría ${S(regMes)} y el tope es ${S(topePersona)}.`],
+    [margenMes >= FIJOS*0.25, 'Aporte real a los costos fijos del mes',
+      `Este producto aporta ${S(margenMes)} = ${P(margenMes/FIJOS)} de los S/ 16,700.` +
+      (margenMes>=FIJOS*0.25?'':' Poco impacto — revisar volumen o precio.')]
+  ];
+  $('checks').innerHTML = chk.map(c=>
+    `<li><span class="ic ${c[0]?'pass':'fail'}">${c[0]?'✓':'✕'}</span><span><b>${c[1]}</b><small>${c[2]}</small></span></li>`).join('');
+
+  // ---- salida ----
+  $('sActivo').textContent   = S(regMes) + ' / mes';
+  $('sSale').textContent     = S(regBaseMes) + ' / mes';
+  $('sRecompra').textContent = S(regBaseMes*12) + ' una sola vez';
+
+  // ---- veredicto ----
+  const v=$('verdict'), big=v.querySelector('.big'), sub=v.querySelector('.sub');
+  const nom = $('nombre').value.trim() || 'El producto';
+  const precioMin = costo/(1-U.m)*IGV, costoMax = neto*(1-U.m);
+  if (costo<=0 || neto<=0){
+    v.className='verdict warn'; big.textContent='Completa precio y costos'; sub.textContent='';
+  } else if (okMargen && okRetail){
+    v.className='verdict ok';
+    big.textContent = '✓ ' + nom + ' pasa el umbral';
+    sub.innerHTML = `Margen ${P(mPct)} · Movadera se queda con <b>${S(netoUnit)} por unidad</b> y <b>${S(margenMes)} al mes</b>. `+
+                    `El autor${$('autor').value.trim()?' ('+$('autor').value.trim()+')':''} cobra <b>${S(reg)} por unidad</b>.`;
+  } else if (mPct >= U.m-0.05){
+    v.className='verdict warn';
+    big.textContent = '≈ ' + nom + ' está al límite';
+    sub.innerHTML = `Le falta ${P(U.m-mPct)} de margen. Sube el precio a <b>${S(precioMin)} con IGV</b> o baja <b>${S(costo-costoMax)}</b> de costo.`;
+  } else {
+    v.className='verdict bad';
+    big.textContent = '✕ ' + nom + ' no pasa — devolver con el número';
+    sub.innerHTML = `Margen ${P(mPct)}, se necesita ${P(U.m)}. Precio mínimo <b>${S(precioMin)} con IGV</b>, o costo máximo <b>${S(costoMax)}</b> por unidad.`;
+  }
+}
+
+document.querySelectorAll('input,select').forEach(el=>{
+  el.addEventListener('input',calc); el.addEventListener('change',calc);
+});
+calc();
+</script>
+</body>
+</html>

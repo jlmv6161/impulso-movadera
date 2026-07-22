@@ -1,0 +1,13 @@
+# Nunca publicar
+credenciales.txt
+*credencial*
+*password*
+*token*
+*.env
+*.key
+
+# Temporales
+Thumbs.db
+desktop.ini
+~$*
+*.tmp
