@@ -14,6 +14,8 @@ $destino = Split-Path -Parent $MyInvocation.MyCommand.Path
 # La calculadora de regalias NO se publica: es del Comite (topes, margenes,
 # que pasa si el colaborador se va). Se usa local. Solo van las del colaborador.
 $archivos = @(
+    @{src='index.html';                    dst='index.html'},
+    @{src='store.js';                      dst='store.js'},
     @{src='hoja-de-costeo.html';           dst='hoja-de-costeo.html'},
     @{src='Manual-Presentacion-Propuestas.html'; dst='manual.html'}
 )

@@ -6,64 +6,210 @@
 <meta name="robots" content="noindex, nofollow">
 <title>Programa Impulso — Movadera</title>
 <style>
-  :root{--navy:#16334A;--teal:#137A6D;--teal-soft:#E9F4F2;--line:#D8E2E7;--muted:#6B7C89;--bg:#F4F7F8}
-  *{box-sizing:border-box}
-  body{margin:0;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--navy);line-height:1.55}
-  header{background:var(--navy);color:#fff;padding:38px 24px;text-align:center}
-  header h1{margin:0;font-size:1.7rem;letter-spacing:.3px}
-  header p{margin:8px auto 0;font-size:.95rem;opacity:.8;max-width:520px}
-  .wrap{max-width:760px;margin:0 auto;padding:26px 20px 50px}
-  a.tool{display:block;background:#fff;border:1px solid var(--line);border-left:5px solid var(--teal);
-         border-radius:12px;padding:20px 22px;margin-bottom:16px;text-decoration:none;color:inherit;transition:.15s}
-  a.tool:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(22,51,74,.10);border-left-color:var(--navy)}
-  a.tool .ico{font-size:1.7rem}
-  a.tool h2{margin:6px 0 4px;font-size:1.12rem}
-  a.tool p{margin:0;font-size:.9rem;color:var(--muted)}
-  a.tool .who{display:inline-block;margin-top:10px;font-size:.7rem;font-weight:800;letter-spacing:.6px;
-              text-transform:uppercase;background:var(--teal-soft);color:#0F5A50;padding:3px 9px;border-radius:20px}
-  .steps{background:#fff;border:1px solid var(--line);border-radius:12px;padding:20px 24px;margin-top:26px}
-  .steps h3{margin:0 0 12px;font-size:.74rem;text-transform:uppercase;letter-spacing:1px;color:var(--teal)}
-  .steps ol{margin:0;padding-left:20px;font-size:.92rem}
-  .steps li{margin-bottom:7px}
-  footer{text-align:center;font-size:.78rem;color:var(--muted);margin-top:30px;line-height:1.7}
+  :root{--navy:#16334A;--teal:#137A6D;--teal-soft:#E9F4F2;--gold:#B7791F;--gold-soft:#FBF3E2;
+        --line:#D8E2E7;--muted:#6B7C89;--bg:#F4F7F8;--ink:#1c2b36}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+  header{background:var(--navy);color:#fff;padding:20px 22px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+  header h1{font-size:1.15rem;letter-spacing:.2px}
+  header .u{font-size:.82rem;opacity:.85;text-align:right}
+  header .u a{color:#7fd3c4;text-decoration:none;display:block;font-size:.76rem;margin-top:2px}
+  .wrap{max-width:620px;margin:0 auto;padding:22px 18px 60px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;margin-bottom:16px}
+  h2{font-size:1.15rem;color:var(--navy);margin-bottom:4px}
+  .sub{color:var(--muted);font-size:.9rem;margin-bottom:16px}
+  label{display:block;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);margin:14px 0 5px}
+  input{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:9px;font-size:1rem;font-family:inherit;color:var(--ink)}
+  input:focus{outline:2px solid var(--teal);outline-offset:-1px}
+  button{font-family:inherit;cursor:pointer;border:0}
+  .btn{background:var(--teal);color:#fff;padding:13px 18px;border-radius:9px;font-size:1rem;font-weight:700;width:100%;margin-top:18px}
+  .btn:hover{filter:brightness(1.07)}
+  .btn.sec{background:#fff;color:var(--teal);border:1.5px solid var(--teal);margin-top:0}
+  .hint{font-size:.8rem;color:var(--muted);margin-top:12px;background:var(--teal-soft);padding:10px 13px;border-radius:8px}
+  .hint b{color:#0f5a50}
+
+  /* lista de proyectos */
+  .proj{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-left:5px solid var(--teal);
+        border-radius:11px;padding:14px 16px;margin-bottom:10px}
+  .proj .info{flex:1;min-width:0}
+  .proj .info h3{font-size:1rem;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .proj .info p{font-size:.76rem;color:var(--muted);margin-top:2px}
+  .proj .open{background:var(--teal);color:#fff;padding:9px 15px;border-radius:8px;font-weight:700;font-size:.86rem;white-space:nowrap}
+  .proj .menu{background:none;color:var(--muted);font-size:1.2rem;padding:4px 8px;line-height:1}
+  .empty{text-align:center;color:var(--muted);padding:26px 10px;font-size:.92rem}
+  .newrow{display:none;gap:8px;margin-top:12px}
+  .newrow input{flex:1}
+  .newrow button{padding:12px 16px;border-radius:9px;font-weight:700}
+  .addbtn{background:#fff;color:var(--teal);border:1.5px dashed var(--teal);padding:14px;border-radius:11px;font-weight:700;font-size:.95rem;width:100%;margin-top:6px}
+
+  /* pantalla de proyecto: 2 opciones */
+  .opt{display:flex;align-items:center;gap:16px;background:#fff;border:1px solid var(--line);border-radius:14px;
+       padding:20px 22px;margin-bottom:14px;text-decoration:none;color:inherit;transition:.15s;border-left:5px solid var(--teal)}
+  .opt:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(22,51,74,.10)}
+  .opt .ico{font-size:2rem}
+  .opt h3{font-size:1.1rem;color:var(--navy)}
+  .opt p{font-size:.86rem;color:var(--muted);margin-top:2px}
+  .back{display:inline-block;color:var(--teal);text-decoration:none;font-weight:700;font-size:.9rem;margin-bottom:14px}
+  .steps{background:var(--gold-soft);border-radius:11px;padding:16px 18px;margin-top:6px}
+  .steps h4{font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:#6b5314;margin-bottom:8px}
+  .steps ol{padding-left:18px;font-size:.85rem;color:#5a4a1e}
+  .steps li{margin-bottom:5px}
+  footer{text-align:center;font-size:.76rem;color:var(--muted);padding:0 18px 30px;line-height:1.7}
+  .hide{display:none}
 </style>
 </head>
 <body>
 <header>
-  <h1>Programa Impulso</h1>
-  <p>Propón un producto para el catálogo de Movadera. Si se acepta, se fabrica y se vende, cobras una regalía por cada unidad vendida.</p>
+  <h1>🚀 Programa Impulso</h1>
+  <div class="u" id="userbox"></div>
 </header>
 
 <div class="wrap">
-  <a class="tool" href="manual.html">
-    <div class="ico">📖</div>
-    <h2>Manual paso a paso</h2>
-    <p>La guía completa para llevar tu idea hasta un producto vendible: diseño, material, horas, costos de proveedor, empaque y precio. Con un ejemplo real y checklist. Imprímela y llénala.</p>
-    <span class="who">Para el colaborador</span>
-  </a>
 
-  <a class="tool" href="hoja-de-costeo.html">
-    <div class="ico">🧮</div>
-    <h2>Hoja de Costeo y Precio</h2>
-    <p>Llénala paso a paso y calcula sola: cuánto cuesta tu producto, a cuánto se debe vender y cuánto cobrarías de regalía. Se guarda en tu navegador y se puede imprimir.</p>
-    <span class="who">Para el colaborador</span>
-  </a>
-
-  <div class="steps">
-    <h3>Cómo funciona</h3>
-    <ol>
-      <li><b>Anota tu idea</b> en el tablero del taller, con tu nombre y la fecha. Esa fecha es la que dice que la idea es tuya.</li>
-      <li><b>Llena la hoja de costeo</b> con los materiales, el tiempo cronometrado y el precio.</li>
-      <li><b>Trae 3 fotos con precio</b> de productos parecidos del mercado.</li>
-      <li><b>Preséntala</b> en la Ronda Impulso, el último viernes del mes.</li>
-      <li>Si pasa, se hace un <b>prototipo</b>, luego un <b>piloto de 10 unidades</b>; si se venden en 60 días entra al catálogo y cobras el bono.</li>
-    </ol>
+  <!-- ═══ LOGIN ═══ -->
+  <div id="scr-login" class="hide">
+    <div class="card">
+      <h2>Entra a tu espacio</h2>
+      <p class="sub">Tus propuestas de producto, en un solo lugar.</p>
+      <label>Tu nombre</label>
+      <input id="in-nombre" type="text" placeholder="Ej. Carlos Gutiérrez" autocomplete="off">
+      <label>Tu clave (tu DNI)</label>
+      <input id="in-dni" type="text" inputmode="numeric" placeholder="Ej. 45678912" autocomplete="off">
+      <button class="btn" onclick="doLogin()">Entrar</button>
+      <div class="hint">Tu clave es tu <b>DNI</b>. Tus proyectos se guardan <b>en este dispositivo</b> (este
+      celular o computadora); podrás cerrar y continuar después desde el mismo equipo.</div>
+    </div>
   </div>
 
-  <footer>
-    Movadera SAC · Programa Impulso<br>
-    Uso interno. Las reglas completas están en el reglamento entregado por la empresa.
-  </footer>
+  <!-- ═══ MIS PROYECTOS ═══ -->
+  <div id="scr-projects" class="hide">
+    <div class="card">
+      <h2>Mis proyectos</h2>
+      <p class="sub">Cada proyecto es una propuesta de producto que estás desarrollando.</p>
+      <div id="proj-list"></div>
+      <div class="newrow" id="newrow">
+        <input id="in-projname" type="text" placeholder="Nombre del producto (ej. Repisa flotante)" autocomplete="off">
+        <button class="btn sec" style="margin:0" onclick="crearProyecto()">Crear</button>
+      </div>
+      <button class="addbtn" id="addbtn" onclick="mostrarNuevo()">+ Nuevo proyecto</button>
+    </div>
+    <div class="steps">
+      <h4>Cómo funciona</h4>
+      <ol>
+        <li>Crea un proyecto por cada producto que quieras proponer.</li>
+        <li>Entra y usa el <b>Manual paso a paso</b> y la <b>Hoja de costeo</b>.</li>
+        <li>Todo se guarda solo. Cierra y continúa cuando quieras.</li>
+        <li>Cuando esté listo, preséntalo en la Ronda del último viernes del mes.</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- ═══ PROYECTO (2 opciones) ═══ -->
+  <div id="scr-project" class="hide">
+    <a class="back" href="#" onclick="verProyectos();return false">← Mis proyectos</a>
+    <div class="card">
+      <h2 id="proj-title">Proyecto</h2>
+      <p class="sub" id="proj-meta"></p>
+      <a class="opt" id="opt-manual">
+        <div class="ico">📖</div>
+        <div><h3>Manual paso a paso</h3><p>La guía completa: diseño, material, horas, costos, empaque y precio.</p></div>
+      </a>
+      <a class="opt" id="opt-hoja">
+        <div class="ico">🧮</div>
+        <div><h3>Hoja de costeo</h3><p>Ingresa tus números y calcula solo si tu producto pasa. Se guarda en este proyecto.</p></div>
+      </a>
+      <button class="btn sec" style="margin-top:8px" onclick="renombrar()">✏️ Renombrar proyecto</button>
+    </div>
+  </div>
+
 </div>
+
+<footer>
+  Movadera SAC · Programa Impulso · uso interno<br>
+  Tus datos se guardan solo en este dispositivo.
+</footer>
+
+<script src="store.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const S = ImpulsoStore;
+const show = id => { ['scr-login','scr-projects','scr-project'].forEach(s=>$(s).classList.toggle('hide', s!==id)); };
+const fecha = ts => { const d=new Date(ts); return d.toLocaleDateString('es-PE',{day:'2-digit',month:'short',year:'numeric'}); };
+
+function pintarUser(){
+  const u=S.currentUser();
+  $('userbox').innerHTML = u ? `${u.nombre}<a href="#" onclick="salir();return false">Cerrar sesión</a>` : '';
+}
+
+/* ---- login ---- */
+function doLogin(){
+  const nombre=$('in-nombre').value, dni=$('in-dni').value;
+  if(!nombre.trim()||!dni.trim()){ alert('Escribe tu nombre y tu DNI.'); return; }
+  S.login(nombre,dni); pintarUser(); verProyectos();
+}
+function salir(){ S.logout(); pintarUser(); show('scr-login'); }
+
+/* ---- proyectos ---- */
+function verProyectos(){
+  const list=S.listProjects();
+  const cont=$('proj-list');
+  if(!list.length){
+    cont.innerHTML=`<div class="empty">Todavía no tienes proyectos.<br>Crea el primero abajo 👇</div>`;
+  } else {
+    cont.innerHTML=list.map(p=>`
+      <div class="proj">
+        <div class="info">
+          <h3>${escapeHtml(p.nombre)}</h3>
+          <p>Última edición: ${fecha(p.updatedAt)}</p>
+        </div>
+        <button class="menu" title="Eliminar" onclick="eliminar('${p.id}')">🗑</button>
+        <button class="open" onclick="abrir('${p.id}')">Abrir →</button>
+      </div>`).join('');
+  }
+  $('newrow').style.display='none'; $('addbtn').style.display='block';
+  $('in-projname').value='';
+  show('scr-projects');
+}
+function mostrarNuevo(){ $('newrow').style.display='flex'; $('addbtn').style.display='none'; $('in-projname').focus(); }
+function crearProyecto(){
+  const n=$('in-projname').value;
+  if(!n.trim()){ alert('Ponle un nombre al proyecto.'); return; }
+  const p=S.createProject(n);
+  abrir(p.id);
+}
+function eliminar(id){
+  const p=S.getProject(id);
+  if(confirm(`¿Eliminar el proyecto "${p?p.nombre:''}" y todos sus datos? No se puede deshacer.`)){
+    S.deleteProject(id); verProyectos();
+  }
+}
+
+/* ---- pantalla de proyecto ---- */
+function abrir(id){
+  const p=S.getProject(id); if(!p){ verProyectos(); return; }
+  S.setActiveProject(id);
+  $('proj-title').textContent=p.nombre;
+  const tieneDatos = !!S.loadCosteo(id);
+  $('proj-meta').textContent = `Creado ${fecha(p.createdAt)} · Hoja de costeo: ${tieneDatos?'en progreso':'sin empezar'}`;
+  $('opt-manual').href=`manual.html?p=${id}`;
+  $('opt-hoja').href=`hoja-de-costeo.html?p=${id}`;
+  show('scr-project');
+}
+function renombrar(){
+  const id=S.getActiveProject(); const p=S.getProject(id); if(!p) return;
+  const n=prompt('Nuevo nombre del proyecto:', p.nombre);
+  if(n&&n.trim()){ S.renameProject(id,n); abrir(id); }
+}
+
+function escapeHtml(s){ return (s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* ---- arranque ---- */
+pintarUser();
+const _pIn = new URLSearchParams(location.search).get('p');
+if(S.currentUser()){
+  if(_pIn && S.getProject(_pIn)) abrir(_pIn);
+  else verProyectos();
+} else show('scr-login');
+</script>
 </body>
 </html>

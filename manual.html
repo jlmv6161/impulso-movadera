@@ -98,9 +98,14 @@
 <body>
 
 <div class="toolbar">
-  <p><b>Manual de Presentación de Propuestas — Programa Impulso.</b> Imprime este documento (o guárdalo como PDF) y entrégalo llenado.</p>
+  <p><a id="backlink" href="index.html" style="color:#7fd3c4;text-decoration:none;font-weight:700;display:none;margin-right:6px">← Volver al proyecto</a>
+  <b>Manual de Presentación de Propuestas — Programa Impulso.</b> Imprime este documento (o guárdalo como PDF) y entrégalo llenado.</p>
   <button onclick="window.print()">🖨 Imprimir / Guardar PDF</button>
 </div>
+<script>
+  (function(){ var p=new URLSearchParams(location.search).get('p');
+    if(p){ var a=document.getElementById('backlink'); a.href='index.html?p='+p; a.style.display='inline'; } })();
+</script>
 
 <!-- ═══════════════ PÁGINA 1 — PORTADA + CÓMO USARLO ═══════════════ -->
 <section class="page">

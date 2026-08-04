@@ -53,25 +53,35 @@
   .verdict .sub{display:block;font-weight:400;font-size:.86rem;opacity:.93;margin-top:3px}
   .formula{font-family:Consolas,monospace;background:var(--navy);color:#B7E4DB;padding:9px 13px;border-radius:7px;font-size:.8rem;margin:8px 0;overflow-x:auto}
   .warn{color:var(--bad);font-weight:700}
+  #projbar{background:#0e2636;color:#cfe0e6;font-size:.85rem;padding:8px 20px;display:flex;
+           justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+  #projbar a{color:#7fd3c4;text-decoration:none;font-weight:600}
+  #projbar b{color:#fff}
+  #saveind{opacity:.85;font-size:.8rem}
   @media print{
     body{background:#fff;font-size:12px}
     header{background:#fff;color:var(--navy);border-bottom:2px solid var(--navy)}
-    .btns,.add,.del,.tip{display:none!important}
+    .btns,.add,.del,.tip,#projbar{display:none!important}
     section{break-inside:avoid;border:1px solid #999;margin-bottom:10px;padding:10px 14px}
     input,select{border:0;border-bottom:1px solid #999;border-radius:0}
   }
 </style>
+<script src="store.js"></script>
 </head>
 <body>
+<div id="projbar">
+  <a id="backlink" href="index.html">← Volver al proyecto</a>
+  <span>Proyecto: <b id="projname">…</b></span>
+  <span id="saveind">Guardado ✓</span>
+</div>
 <header>
   <div>
     <h1>Hoja de Costeo y Precio</h1>
-    <p>Programa Impulso · Movadera SAC — llena de arriba hacia abajo, los totales se calculan solos</p>
+    <p>Programa Impulso · Movadera SAC — llena de arriba hacia abajo, se guarda solo</p>
   </div>
   <div class="btns">
-    <button onclick="guardar()">💾 Guardar</button>
     <button class="ghost" onclick="window.print()">🖨 Imprimir</button>
-    <button class="ghost" onclick="limpiar()">Limpiar</button>
+    <button class="ghost" onclick="limpiar()">Vaciar</button>
   </div>
 </header>
 
@@ -446,7 +456,12 @@ function calc(){
 }
 
 /* ---------- guardar / cargar ---------- */
-const KEY = 'movadera_costeo';
+/* ---- proyecto activo (viene del index vía ?p=<id>) ---- */
+const _params = new URLSearchParams(location.search);
+const PID  = _params.get('p') || (window.ImpulsoStore && ImpulsoStore.getActiveProject());
+const USER = window.ImpulsoStore ? ImpulsoStore.currentUser() : null;
+const PROJ = (window.ImpulsoStore && USER && PID) ? ImpulsoStore.getProject(PID) : null;
+
 function estado(){
   const rows = (tb, cls) => [...$(tb).querySelectorAll('tr')].map(tr=>cls.map(c=>tr.querySelector(c)?.value ?? ''));
   const campos = {};
@@ -457,13 +472,15 @@ function estado(){
     tiempos: rows('tbTiempos',['.d','.m']),
     mercado: rows('tbMercado',['.d','.w','.p'])};
 }
-function guardar(){ localStorage.setItem(KEY, JSON.stringify(estado())); alert('Hoja guardada en este navegador.'); }
-function limpiar(){ if(confirm('¿Borrar todo y empezar de nuevo?')){ localStorage.removeItem(KEY); location.reload(); } }
 
-function cargar(){
-  const raw = localStorage.getItem(KEY);
-  if(!raw){ inicial(); return; }
-  const d = JSON.parse(raw);
+let _saveT=null;
+function persist(){ ImpulsoStore.saveCosteo(PID, estado()); const i=$('saveind'); if(i) i.textContent='Guardado ✓'; }
+function autosave(){ const i=$('saveind'); if(i) i.textContent='Guardando…'; clearTimeout(_saveT); _saveT=setTimeout(persist,500); }
+function limpiar(){ if(confirm('¿Vaciar los datos de ESTE proyecto y empezar de nuevo?')){ ImpulsoStore.saveCosteo(PID,null); location.reload(); } }
+
+function cargarDatos(){
+  const d = ImpulsoStore.loadCosteo(PID);
+  if(!d){ inicial(); return; }
   Object.entries(d.campos||{}).forEach(([k,v])=>{ if($(k)) $(k).value = v; });
   (d.tablero||[]).forEach(r=>{ addTablero(); const tr=$('tbTablero').lastElementChild;
     tr.querySelector('.mat').value=r[0]; tr.querySelector('.prec').value=r[1]; tr.querySelector('.uxp').value=r[2]; });
@@ -472,19 +489,28 @@ function cargar(){
   (d.mercado||[]).forEach(r=>{ addMercado(); const tr=$('tbMercado').lastElementChild;
     tr.querySelector('.d').value=r[0]; tr.querySelector('.w').value=r[1]; tr.querySelector('.p').value=r[2]; });
   if(!(d.tablero||[]).length) inicial();
-  calc();
 }
 function inicial(){
   addTablero();
   ['CNC tercerizado (por plancha / pieza)','Tapacanto (ml)','Herrajes / soportes','Cola, tornillos, lija','Embalaje'].forEach(i=>addItem(i,'',''));
   ['Canteado','Perforado / armado','Lijado y limpieza','Acabado','Embalaje'].forEach(f=>addTiempo(f));
   addMercado(); addMercado(); addMercado();
+  if(USER && !$('f_autor').value)  $('f_autor').value  = USER.nombre;
+  if(PROJ && !$('f_nombre').value) $('f_nombre').value = PROJ.nombre;
   $('f_fecha').valueAsDate = new Date();
 }
 
-document.addEventListener('input', calc);
-document.addEventListener('change', calc);
-cargar(); calc();
+/* ---- arranque: exige sesión + proyecto ---- */
+if(!window.ImpulsoStore || !USER || !PID || !PROJ){
+  location.replace('index.html');
+} else {
+  ImpulsoStore.setActiveProject(PID);
+  $('projname').textContent = PROJ.nombre;
+  $('backlink').href = 'index.html?p=' + PID;
+  cargarDatos(); calc();
+  document.addEventListener('input',  ()=>{ calc(); autosave(); });
+  document.addEventListener('change', ()=>{ calc(); autosave(); });
+}
 </script>
 </body>
 </html>
