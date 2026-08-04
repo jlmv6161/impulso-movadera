@@ -17,6 +17,26 @@
 
   let _profile = null;   // { uid, email, dni, nombre, isAdmin }
 
+  /* Inicia sesión; si la cuenta no existe, la crea. Firebase reciente devuelve
+   * 'auth/invalid-credential' tanto para cuenta inexistente como para clave errada,
+   * así que distinguimos por el resultado de intentar crearla. */
+  async function signInOrCreate(email, pass) {
+    try {
+      await fb.auth.signInWithEmailAndPassword(email, pass);
+    } catch (e) {
+      const c = e.code || '';
+      if (c === 'auth/user-not-found' || c === 'auth/invalid-credential' || c === 'auth/invalid-login-credentials') {
+        try {
+          await fb.auth.createUserWithEmailAndPassword(email, pass);
+        } catch (e2) {
+          if (e2.code === 'auth/email-already-in-use') { const err = new Error('WRONGPASS'); err.wrongpass = true; throw err; }
+          if (e2.code === 'auth/weak-password') throw new Error('La contraseña debe tener al menos 6 caracteres.');
+          throw e2;
+        }
+      } else { throw e; }
+    }
+  }
+
   function buildProfile(user, nombreHint) {
     const email = (user.email || '').toLowerCase();
     const isAdmin = ADMIN_EMAILS.includes(email);
@@ -41,16 +61,11 @@
     async loginColaborador(nombre, dni) {
       nombre = clean(nombre); dni = clean(dni);
       if (!nombre || !dni) throw new Error('Escribe tu nombre y tu DNI.');
-      const email = dniToEmail(dni), pass = dni;
-      try {
-        await fb.auth.signInWithEmailAndPassword(email, pass);
-      } catch (e) {
-        if (e.code === 'auth/user-not-found') await fb.auth.createUserWithEmailAndPassword(email, pass);
-        else if (e.code === 'auth/wrong-password') throw new Error('Ese DNI ya está registrado con otro nombre/clave. Verifica el número.');
-        else throw e;
-      }
+      if (dni.length < 6) throw new Error('El DNI debe tener al menos 6 dígitos.');
+      try { await signInOrCreate(dniToEmail(dni), dni); }
+      catch (e) { if (e.wrongpass) throw new Error('Ese DNI ya está registrado con otra clave. Verifica el número.'); throw e; }
       const u = fb.auth.currentUser;
-      if (u.displayName !== nombre) { try { await u.updateProfile({ displayName: nombre }); } catch (e) {} }
+      if (u.displayName !== nombre) { try { await u.updateProfile({ displayName: nombre }); } catch (_) {} }
       _profile = buildProfile(u, nombre);
       return _profile;
     },
@@ -58,13 +73,9 @@
       email = clean(email).toLowerCase();
       if (!ADMIN_EMAILS.includes(email)) throw new Error('Ese correo no está autorizado como administrador.');
       if (!pass) throw new Error('Escribe tu contraseña.');
-      try {
-        await fb.auth.signInWithEmailAndPassword(email, pass);
-      } catch (e) {
-        if (e.code === 'auth/user-not-found') await fb.auth.createUserWithEmailAndPassword(email, pass);
-        else if (e.code === 'auth/wrong-password') throw new Error('Contraseña incorrecta.');
-        else throw e;
-      }
+      if (pass.length < 6) throw new Error('La contraseña debe tener al menos 6 caracteres.');
+      try { await signInOrCreate(email, pass); }
+      catch (e) { if (e.wrongpass) throw new Error('Contraseña incorrecta.'); throw e; }
       _profile = buildProfile(fb.auth.currentUser);
       return _profile;
     },

@@ -169,6 +169,12 @@ const show = id => SCREENS.forEach(s => $(s).classList.toggle('hide', s !== id))
 const fecha = ts => { const m = S.ms(ts); return m ? new Date(m).toLocaleDateString('es-PE',{day:'2-digit',month:'short',year:'numeric'}) : '—'; };
 const esc = s => (s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const busy = (id,on,txt) => { const b=$(id); b.disabled=on; if(txt!==undefined) b.textContent=txt; };
+function errHint(e){
+  const m=(e&&(e.code||e.message))||'';
+  if(/permission-denied/i.test(m)) return 'Faltan publicar las reglas de seguridad en Firebase (Paso 2).';
+  if(/offline|unavailable|network/i.test(m)) return 'Sin conexión. Revisa tu internet.';
+  return 'Error: '+m;
+}
 
 function pintarUser(){
   const u = S.currentUser();
@@ -202,7 +208,9 @@ function traducir(e){
 async function verProyectos(){
   show('scr-projects');
   const cont=$('proj-list'); cont.innerHTML='<div class="empty">Cargando…</div>';
-  const list=await S.listProjects();
+  let list;
+  try{ list=await S.listProjects(); }
+  catch(e){ cont.innerHTML='<div class="empty">No se pudieron cargar tus proyectos.<br>'+errHint(e)+'</div>'; return; }
   if(!list.length){ cont.innerHTML='<div class="empty">Todavía no tienes proyectos.<br>Crea el primero abajo 👇</div>'; }
   else cont.innerHTML=list.map(p=>`
     <div class="proj"><div class="info"><h3>${esc(p.nombre)}</h3><p>Última edición: ${fecha(p.updatedAt)}</p></div>
@@ -243,7 +251,9 @@ async function renombrar(){
 async function verAdmin(){
   show('scr-admin');
   const cont=$('admin-list'); cont.innerHTML='<div class="empty">Cargando…</div>';
-  const all=await S.listAllProjects();
+  let all;
+  try{ all=await S.listAllProjects(); }
+  catch(e){ cont.innerHTML='<div class="empty">No se pudieron cargar los proyectos.<br>'+errHint(e)+'</div>'; return; }
   $('admin-count').textContent=`(${all.length})`;
   if(!all.length){ cont.innerHTML='<div class="empty">Aún no hay proyectos del equipo.</div>'; return; }
   const grupos={};
