@@ -18,7 +18,8 @@ $archivos = @(
     @{src='firebase-init.js';              dst='firebase-init.js'},
     @{src='store.js';                      dst='store.js'},
     @{src='hoja-de-costeo.html';           dst='hoja-de-costeo.html'},
-    @{src='Manual-Presentacion-Propuestas.html'; dst='manual.html'}
+    @{src='Manual-Presentacion-Propuestas.html'; dst='manual.html'},
+    @{src='Brief-1-Pagina.html';           dst='brief.html'}
 )
 
 Write-Host "Copiando herramientas desde la carpeta de trabajo..." -ForegroundColor Cyan

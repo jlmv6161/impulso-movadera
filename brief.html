@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Programa Impulso — Brief 1 página | Movadera</title>
+<style>
+  :root{--navy:#16334A;--teal:#137A6D;--teal-soft:#E9F4F2;--gold:#B7791F;--gold-soft:#FBF3E2;
+        --ink:#1c2b36;--muted:#5f7280;--line:#c9d6dd}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  body{font-family:'Segoe UI',system-ui,Arial,sans-serif;color:var(--ink);background:#e9eef1;line-height:1.32}
+
+  .bar{position:sticky;top:0;background:var(--navy);color:#fff;padding:9px 18px;display:flex;
+       justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;z-index:10}
+  .bar p{font-size:.78rem;opacity:.85}
+  .bar button{background:#fff;color:var(--navy);border:0;padding:7px 15px;border-radius:6px;font-weight:700;
+              font-size:.82rem;cursor:pointer;font-family:inherit}
+
+  .sheet{width:210mm;height:297mm;margin:14px auto;background:#fff;padding:11mm 12mm;
+          box-shadow:0 2px 14px rgba(0,0,0,.13);display:flex;flex-direction:column}
+
+  header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2.5px solid var(--teal);
+         padding-bottom:6px;margin-bottom:9px}
+  header h1{font-size:19pt;color:var(--navy);letter-spacing:.2px}
+  header .tag{font-size:8.2pt;color:var(--muted);text-align:right;line-height:1.3}
+  .hook{background:var(--teal-soft);border-radius:7px;padding:7px 12px;font-size:9.3pt;margin-bottom:9px;color:#0f5a50}
+  .hook b{color:#0b443c}
+
+  .cols{display:flex;gap:10px;flex:1}
+  .col{flex:1;display:flex;flex-direction:column;gap:8px}
+
+  .step{border:1px solid var(--line);border-radius:8px;padding:7px 9px 7px 8px;border-left:4px solid var(--teal);break-inside:avoid}
+  .step h3{font-size:9.8pt;color:var(--navy);display:flex;align-items:center;gap:7px;margin-bottom:2px}
+  .step h3 .n{background:var(--teal);color:#fff;width:19px;height:19px;border-radius:50%;
+              display:inline-flex;align-items:center;justify-content:center;font-size:8.6pt;flex-shrink:0}
+  .step p{font-size:8.7pt;color:var(--ink);padding-left:26px}
+  .step p .k{color:var(--navy);font-weight:700}
+
+  .money{border:1.5px solid var(--gold);background:var(--gold-soft);border-radius:8px;padding:8px 10px}
+  .money h3{font-size:9.6pt;color:#6b5314;margin-bottom:4px}
+  .money .big{font-size:15pt;font-weight:800;color:var(--navy);line-height:1.1}
+  .money p{font-size:8.4pt;color:#6b5314;margin-top:3px}
+
+  .rules{border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+  .rules h3{font-size:9.4pt;color:var(--navy);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px}
+  .rules li{font-size:8.6pt;list-style:none;padding-left:15px;position:relative;margin-bottom:3px}
+  .rules li::before{content:"✓";position:absolute;left:0;color:var(--teal);font-weight:800}
+  .rules li.no::before{content:"✕";color:#B23A48}
+
+  .warn{background:#fff5f2;border:1px solid #e6b8ae;border-radius:8px;padding:7px 10px;font-size:8.5pt;color:#8a3626}
+  .warn b{color:#6b2318}
+
+  .formula{background:var(--navy);color:#b7e4db;font-family:Consolas,monospace;font-size:8.2pt;
+           padding:6px 9px;border-radius:6px;margin-top:4px}
+
+  footer{border-top:1.5px solid var(--line);margin-top:9px;padding-top:6px;display:flex;
+         justify-content:space-between;font-size:7.8pt;color:var(--muted)}
+  footer b{color:var(--navy)}
+
+  @media print{
+    body{background:#fff}
+    .bar{display:none}
+    .sheet{width:auto;height:auto;margin:0;padding:0;box-shadow:none}
+  }
+  @page{size:A4;margin:11mm 12mm}
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <p><b>Brief de 1 página — Programa Impulso.</b> Imprímelo o guárdalo como PDF y entrégalo al equipo.</p>
+  <button onclick="window.print()">🖨 Imprimir / PDF</button>
+</div>
+
+<div class="sheet">
+  <header>
+    <h1>Programa Impulso · Movadera</h1>
+    <div class="tag">Trae una idea de producto.<br>Si se vende, <b>cobras regalía</b>.</div>
+  </header>
+
+  <div class="hook">
+    <b>¿De qué se trata?</b> Propón un producto para vender en serie (no un mueble a medida). Si el
+    Comité lo acepta, se fabrica y se vende, <b>tú ganas una regalía por cada unidad vendida</b> —
+    plata extra todos los meses, además de tu sueldo.
+  </div>
+
+  <div class="cols">
+    <!-- COLUMNA IZQUIERDA: LOS 8 PASOS -->
+    <div class="col">
+      <div class="step">
+        <h3><span class="n">1</span> La idea</h3>
+        <p>¿Qué es y <span class="k">para quién</span>? Ojo: quien regala no es quien usa. Anótala en el
+        tablero del taller con <span class="k">tu nombre y la fecha</span> — eso la hace tuya.</p>
+      </div>
+      <div class="step">
+        <h3><span class="n">2</span> Diseño</h3>
+        <p>Dibújala: frente, lado y arriba, <span class="k">medidas en mm</span>. Marca qué caras llevan
+        canto. Elige <span class="k">una sola medida</span> para arrancar (el MVP).</p>
+      </div>
+      <div class="step">
+        <h3><span class="n">3</span> Material</h3>
+        <p>¿Cuántos productos salen de <span class="k">una plancha</span>? Costo de material = precio de
+        la plancha ÷ productos que salen. Diseña para desperdiciar poco.</p>
+      </div>
+      <div class="step">
+        <h3><span class="n">4</span> Manufactura</h3>
+        <p><span class="k">Cronometra</span> la 2ª unidad (la 1ª sale lenta). Suma los minutos de las
+        fases del taller. <span class="k">El CNC no cuenta acá</span>: se terceriza (va en el paso 5).</p>
+      </div>
+      <div class="step">
+        <h3><span class="n">5</span> Costos de proveedor</h3>
+        <p>Suma todo: canto, herrajes, cola, lija, <span class="k">CNC tercerizado</span>, empaque y
+        flete. Lo chico también cuenta. Si no sabes un precio, <span class="k">pregúntalo</span>.</p>
+      </div>
+      <div class="step">
+        <h3><span class="n">6</span> Empaque</h3>
+        <p>¿Cómo llega al cliente? Si es regalo, la caja importa. Si va a provincia, piensa en
+        <span class="k">flat-pack</span>. El envío lo paga el cliente, no tú.</p>
+      </div>
+      <div class="step">
+        <h3><span class="n">7</span> Precio</h3>
+        <p>Junta el costo, súmale el margen y compáralo con el mercado (<span class="k">trae 3 fotos con
+        precio</span>).</p>
+        <div class="formula">Precio sin IGV = Costo ÷ 0.45   (SE DIVIDE, no se multiplica)</div>
+      </div>
+      <div class="step">
+        <h3><span class="n">8</span> Preséntala</h3>
+        <p>Llena la hoja de costeo y la ficha, y defiéndela en la <span class="k">Ronda Impulso</span>
+        (último viernes del mes). Si no pasa, te dicen el número a mejorar y vuelves.</p>
+      </div>
+    </div>
+
+    <!-- COLUMNA DERECHA: PLATA + REGLAS -->
+    <div class="col">
+      <div class="money">
+        <h3>💰 Cuánto ganas</h3>
+        <div class="big">3 % de cada venta</div>
+        <p>Por cada unidad vendida, <b>mientras trabajes en Movadera</b>. Más un <b>bono por efectividad</b>
+        cuando tu producto <b>demuestra que vende</b> (10 unidades en 60 días): <b>40 % del margen sin
+        IGV de esas 10 ventas</b>.</p>
+        <p style="margin-top:4px"><b>Bono, ej.:</b> placa S/ 170 (S/ 144.07 sin IGV) → margen S/ 86.44/u →
+        40 % = S/ 34.57 × 10 = <b>S/ 346</b> por tus 10 primeras ventas.</p>
+        <p style="margin-top:4px"><b>Regalía, ej.:</b> S/ 4.32 por unidad. 40 al mes = <b>S/ 173 extra
+        al mes</b>, por un solo producto tuyo.</p>
+      </div>
+
+      <div class="rules">
+        <h3>Tu producto SÍ sirve si…</h3>
+        <ul>
+          <li>Se fabrica <b>igual siempre</b> (la 10ª = la 1ª)</li>
+          <li>No hay que <b>medir la casa</b> del cliente</li>
+          <li>Se hace en el <b>tiempo muerto</b> del taller</li>
+          <li>La gente <b>ya compra</b> algo parecido</li>
+          <li class="no">Es un mueble a medida distinto cada vez</li>
+        </ul>
+      </div>
+
+      <div class="rules">
+        <h3>Cómo te evalúan (necesitas 70/100)</h3>
+        <ul style="columns:1">
+          <li>Margen — 30 %</li>
+          <li>Que se repita igual — 20 %</li>
+          <li>Que haya demanda (tus 3 fotos) — 20 %</li>
+          <li>Que quepa en tiempo ocioso — 15 %</li>
+          <li>Nuestro acabado premium — 15 %</li>
+        </ul>
+      </div>
+
+      <div class="warn">
+        <b>La regla que más falla:</b> el precio <b>se DIVIDE</b> entre 0.45 (venta directa), no se
+        multiplica por 1.55. Costo S/ 47 → S/ 47 ÷ 0.45 = <b>S/ 104</b>. Y todo el margen se calcula
+        <b>sin IGV</b>.
+      </div>
+
+      <div class="rules" style="border-color:var(--teal);background:var(--teal-soft)">
+        <h3 style="color:#0f5a50">Herramientas — ábrelas en tu celular</h3>
+        <div style="display:flex;gap:10px;align-items:center">
+          <div style="width:74px;height:74px;flex-shrink:0;background:#fff;border:1px solid var(--line);border-radius:6px;padding:5px">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 33 33" shape-rendering="crispEdges" style="width:100%;height:100%;display:block"><path fill="#ffffff" d="M0 0h33v33H0z"/><path stroke="#000000" d="M0 0.5h7m2 0h2m2 0h2m1 0h2m1 0h2m1 0h3m1 0h7M0 1.5h1m5 0h1m4 0h7m4 0h1m1 0h1m1 0h1m5 0h1M0 2.5h1m1 0h3m1 0h1m1 0h2m1 0h1m1 0h1m1 0h4m4 0h1m2 0h1m1 0h3m1 0h1M0 3.5h1m1 0h3m1 0h1m1 0h2m4 0h1m1 0h1m2 0h4m1 0h1m1 0h1m1 0h3m1 0h1M0 4.5h1m1 0h3m1 0h1m1 0h5m2 0h1m2 0h1m2 0h1m2 0h1m1 0h1m1 0h3m1 0h1M0 5.5h1m5 0h1m1 0h1m1 0h1m1 0h1m2 0h2m3 0h2m4 0h1m5 0h1M0 6.5h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7M8 7.5h3m4 0h1m5 0h3M0 8.5h1m1 0h5m3 0h1m1 0h4m1 0h1m5 0h1m2 0h5M1 9.5h3m1 0h1m1 0h1m1 0h2m1 0h1m1 0h1m1 0h1m1 0h7m1 0h2m1 0h2m1 0h1M1 10.5h2m1 0h5m1 0h3m2 0h2m1 0h1m2 0h1m2 0h1m3 0h1m1 0h2M0 11.5h6m1 0h1m2 0h2m2 0h2m4 0h4m1 0h1m2 0h5M1 12.5h4m1 0h1m1 0h4m6 0h1m2 0h1m2 0h2m1 0h3M1 13.5h2m2 0h1m3 0h2m1 0h1m1 0h3m3 0h5m1 0h1m2 0h1m1 0h2M1 14.5h4m1 0h3m3 0h1m1 0h1m2 0h3m2 0h1m2 0h5m1 0h1M1 15.5h3m1 0h1m1 0h3m1 0h1m1 0h2m1 0h1m1 0h4m2 0h3m3 0h1M1 16.5h1m4 0h1m2 0h1m1 0h1m1 0h1m3 0h4m4 0h1m1 0h2m3 0h1M1 17.5h2m1 0h2m2 0h1m1 0h1m1 0h2m2 0h5m1 0h2m2 0h2m1 0h4M2 18.5h5m1 0h2m1 0h1m2 0h4m2 0h1m1 0h1m2 0h1m1 0h2m1 0h2M0 19.5h1m1 0h1m2 0h1m1 0h2m1 0h1m1 0h1m1 0h1m1 0h3m8 0h4M3 20.5h4m1 0h1m1 0h1m2 0h1m2 0h1m2 0h7m2 0h2m1 0h2M0 21.5h1m1 0h2m1 0h1m2 0h2m2 0h2m1 0h1m1 0h2m2 0h1m1 0h1m2 0h1m2 0h1m2 0h1M0 22.5h1m1 0h3m1 0h2m3 0h2m1 0h4m2 0h2m2 0h1m1 0h1m1 0h4M0 23.5h1m2 0h1m1 0h1m1 0h2m1 0h6m2 0h1m2 0h4m1 0h1m1 0h3M0 24.5h1m2 0h1m1 0h2m4 0h2m1 0h2m1 0h1m6 0h5m2 0h2M8 25.5h3m1 0h3m3 0h4m2 0h1m3 0h1m1 0h1m1 0h1M0 26.5h7m2 0h1m1 0h1m2 0h3m1 0h1m1 0h2m1 0h2m1 0h1m1 0h1m1 0h2M0 27.5h1m5 0h1m1 0h2m1 0h1m2 0h1m1 0h1m2 0h6m3 0h4M0 28.5h1m1 0h3m1 0h1m1 0h1m3 0h1m5 0h1m2 0h1m2 0h6m1 0h1M0 29.5h1m1 0h3m1 0h1m1 0h2m1 0h3m1 0h3m2 0h1m1 0h1m1 0h2m2 0h2m2 0h1M0 30.5h1m1 0h3m1 0h1m1 0h1m1 0h2m2 0h1m3 0h2m2 0h2m2 0h2m1 0h2M0 31.5h1m5 0h1m3 0h1m3 0h1m1 0h1m2 0h3m1 0h1m1 0h1m2 0h3M0 32.5h7m1 0h1m1 0h2m2 0h1m2 0h1m1 0h1m2 0h4m1 0h1m3 0h1"/></svg>
+          </div>
+          <div style="font-size:8.3pt;line-height:1.3">
+            Escanéalo, o entra a:<br>
+            <b style="color:var(--navy);font-size:8.6pt">jlmv6161.github.io/impulso-movadera</b>
+            <ul style="margin-top:5px">
+              <li>📖 <b>Manual paso a paso</b> — el detalle de todo</li>
+              <li>🧮 <b>Hoja de costeo</b> — calcula tu producto sola</li>
+            </ul>
+          </div>
+        </div>
+        <p style="font-size:8.2pt;margin-top:6px;padding-top:6px;border-top:1px solid #bfe0d9">
+          🔑 <b>Para entrar:</b> tu <b>nombre</b> y tu <b>DNI como clave</b>. Escribe siempre el DNI
+          <b>igual</b> (si lo cambias, creas otra cuenta y no verás tus proyectos).</p>
+        <p style="font-size:8.2pt;margin-top:5px">¿Dudas? Pregúntale a <b>José Luis</b> o al <b>área de diseño</b>.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <span>Movadera SAC · <b>Programa Impulso</b> — trae tu idea a la Ronda del último viernes del mes.</span>
+    <span>La idea es tuya desde que la anotas en el tablero.</span>
+  </footer>
+</div>
+
+</body>
+</html>
