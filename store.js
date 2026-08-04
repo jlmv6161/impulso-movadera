@@ -115,6 +115,12 @@
       await col().doc(id).update({ costeo: state, updatedAt: serverTs() });
     },
 
+    /* ---- datos del manual llenado (campo aparte del proyecto) ---- */
+    async loadManual(id) { const p = await this.getProject(id); return p ? (p.manual || null) : null; },
+    async saveManual(id, data) {
+      await col().doc(id).update({ manual: data, updatedAt: serverTs() });
+    },
+
     /* ---- proyecto activo (solo navegación, no dato) ---- */
     setActiveProject(id) { try { localStorage.setItem('impulso.active', id); } catch (e) {} },
     getActiveProject() { try { return localStorage.getItem('impulso.active'); } catch (e) { return null; } },

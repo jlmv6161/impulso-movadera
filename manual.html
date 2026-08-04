@@ -84,9 +84,26 @@
   .page-num{text-align:right;font-size:8pt;color:var(--muted);margin-top:14px}
   .ex{font-size:9.3pt;color:var(--muted);font-style:italic}
 
+  /* campos editables en pantalla */
+  #projbar{background:#0e2636;color:#cfe0e6;font-size:9.5pt;padding:8px 20px;display:flex;
+           justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;position:sticky;top:0;z-index:60}
+  #projbar a{color:#7fd3c4;text-decoration:none;font-weight:700}
+  #projbar b{color:#fff}
+  #m-saveind{opacity:.85}
+  .fx{background:#fbfdfe;cursor:text}
+  [contenteditable="true"]{cursor:text}
+  [contenteditable="true"]:focus{outline:2px solid var(--teal);outline-offset:-1px;background:#f2fbf9}
+  .cb{cursor:pointer;position:relative}
+  .cb.on{background:var(--teal)!important;border-color:var(--teal)!important}
+  .cb.on::after{content:'✓';position:absolute;inset:0;color:#fff;font-size:11px;font-weight:900;
+                display:flex;align-items:center;justify-content:center;line-height:1}
+  body.readonly .fx{background:#fff}
+  body.readonly .cb{cursor:default}
   @media print{
     body{background:#fff;font-size:10.5pt}
-    .toolbar{display:none}
+    .toolbar,#projbar{display:none}
+    .fx{background:#fff!important}
+    .cb.on{background:var(--teal)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
     .page{width:auto;min-height:auto;margin:0;padding:0;box-shadow:none;page-break-after:always}
     .page:last-child{page-break-after:auto}
     h2{-webkit-print-color-adjust:exact}
@@ -94,18 +111,24 @@
   }
   @page{size:A4;margin:14mm 12mm}
 </style>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="firebase-init.js"></script>
+<script src="store.js"></script>
 </head>
 <body>
 
+<div id="projbar">
+  <a id="backlink" href="index.html">← Volver al proyecto</a>
+  <span>Proyecto: <b id="m-projname">…</b></span>
+  <span id="m-saveind">Guardado ✓</span>
+</div>
+
 <div class="toolbar">
-  <p><a id="backlink" href="index.html" style="color:#7fd3c4;text-decoration:none;font-weight:700;display:none;margin-right:6px">← Volver al proyecto</a>
-  <b>Manual de Presentación de Propuestas — Programa Impulso.</b> Imprime este documento (o guárdalo como PDF) y entrégalo llenado.</p>
+  <p><b>Manual de Presentación de Propuestas — Programa Impulso.</b> Llénalo aquí mismo: se guarda solo en tu proyecto. También puedes imprimirlo.</p>
   <button onclick="window.print()">🖨 Imprimir / Guardar PDF</button>
 </div>
-<script>
-  (function(){ var p=new URLSearchParams(location.search).get('p');
-    if(p){ var a=document.getElementById('backlink'); a.href='index.html?p='+p; a.style.display='inline'; } })();
-</script>
 
 <!-- ═══════════════ PÁGINA 1 — PORTADA + CÓMO USARLO ═══════════════ -->
 <section class="page">
@@ -535,6 +558,76 @@ Directa: ÷ 0.45  (55%)      B2B: ÷ 0.55  (45%)      Retail: ÷ 0.70  (30%)</di
 
   <div class="page-num">pág. 7</div>
 </section>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+
+  /* ---- detectar qué elementos son "para llenar" ---- */
+  function esCampoTexto(el){
+    if(el.classList.contains('fill')) return true;
+    if(el.tagName==='TD'){
+      if(el.classList.contains('lbl')||el.classList.contains('filled')) return false;
+      if(el.closest('table.ref')) return false;
+      return el.children.length===0 && el.textContent.trim()==='';
+    }
+    if(el.classList.contains('box')){                 // solo el recuadro de boceto (vacío)
+      return el.children.length===0 && el.textContent.trim()==='';
+    }
+    return false;
+  }
+  const campos = [...document.querySelectorAll('.fill, .box, td')].filter(esCampoTexto);
+  const checks = [...document.querySelectorAll('.cb')];
+  campos.forEach(el=>el.classList.add('fx'));
+
+  function serialize(){
+    const d={f:{},c:{}};
+    campos.forEach((el,i)=>{ const t=el.innerText.replace(/ /g,' ').trim(); if(t) d.f[i]=t; });
+    checks.forEach((el,i)=>{ if(el.classList.contains('on')) d.c[i]=1; });
+    return d;
+  }
+  function restore(d){
+    if(!d) return;
+    Object.entries(d.f||{}).forEach(([i,v])=>{ if(campos[i]) campos[i].innerText=v; });
+    Object.keys(d.c||{}).forEach(i=>{ if(checks[i]) checks[i].classList.add('on'); });
+  }
+
+  const setInd = t => { const i=$('m-saveind'); if(i) i.textContent=t; };
+  let PID=null, READONLY=false, saveT=null;
+  async function persist(){
+    if(READONLY||!PID) return;
+    try{ await ImpulsoStore.saveManual(PID, serialize()); setInd('Guardado ✓'); }
+    catch(e){ setInd('⚠ sin conexión — se guardará al reconectar'); }
+  }
+  function autosave(){ if(READONLY) return; setInd('Guardando…'); clearTimeout(saveT); saveT=setTimeout(persist,700); }
+
+  function habilitarEdicion(){
+    campos.forEach(el=>{ el.setAttribute('contenteditable','true'); el.addEventListener('input', autosave); });
+    checks.forEach(el=>el.addEventListener('click', ()=>{ el.classList.toggle('on'); autosave(); }));
+  }
+  function soloLectura(){
+    READONLY=true; document.body.classList.add('readonly'); setInd('Modo lectura (admin)');
+  }
+
+  /* ---- arranque: sesión + proyecto ---- */
+  ImpulsoStore.onAuth(async user=>{
+    if(!user){ location.replace('index.html'); return; }
+    const params=new URLSearchParams(location.search);
+    PID = params.get('p') || ImpulsoStore.getActiveProject();
+    if(!PID){ location.replace('index.html'); return; }
+    const proj = await ImpulsoStore.getProject(PID);
+    if(!proj){ location.replace('index.html'); return; }
+    const soyDueno = proj.ownerUid===user.uid;
+    if(!soyDueno && !user.isAdmin){ location.replace('index.html'); return; }
+    ImpulsoStore.setActiveProject(PID);
+    $('m-projname').textContent = proj.nombre + (soyDueno?'':' · '+(proj.ownerNombre||''));
+    $('backlink').textContent = soyDueno ? '← Volver al proyecto' : '← Volver al panel';
+    $('backlink').href = 'index.html' + (soyDueno?('?p='+PID):'');
+    restore(await ImpulsoStore.loadManual(PID));
+    if(soyDueno) habilitarEdicion(); else soloLectura();
+  });
+})();
+</script>
 
 </body>
 </html>
