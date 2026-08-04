@@ -211,6 +211,7 @@ async function verProyectos(){
   let list;
   try{ list=await S.listProjects(); }
   catch(e){ cont.innerHTML='<div class="empty">No se pudieron cargar tus proyectos.<br>'+errHint(e)+'</div>'; return; }
+  const _seen=new Set(); list=list.filter(p=>_seen.has(p.id)?false:(_seen.add(p.id),true)); // sin duplicados
   if(!list.length){ cont.innerHTML='<div class="empty">Todavía no tienes proyectos.<br>Crea el primero abajo 👇</div>'; }
   else cont.innerHTML=list.map(p=>`
     <div class="proj"><div class="info"><h3>${esc(p.nombre)}</h3><p>Última edición: ${fecha(p.updatedAt)}</p></div>
@@ -219,9 +220,17 @@ async function verProyectos(){
   $('newrow').style.display='none'; $('addbtn').style.display='block'; $('in-projname').value='';
 }
 function mostrarNuevo(){ $('newrow').style.display='flex'; $('addbtn').style.display='none'; $('in-projname').focus(); }
+let _creando=false;
 async function crearProyecto(){
-  const n=$('in-projname').value; if(!n.trim()){ alert('Ponle un nombre al proyecto.'); return; }
-  const p=await S.createProject(n); abrir(p.id);
+  if(_creando) return;                       // evita doble toque
+  const el=$('in-projname'); const n=el.value.trim();
+  if(!n){ alert('Ponle un nombre al proyecto.'); return; }
+  _creando=true;
+  const btn=$('newrow').querySelector('button'); btn.disabled=true; btn.textContent='Creando…';
+  el.value='';
+  try{ const p=await S.createProject(n); await abrir(p.id); }
+  catch(e){ alert('No se pudo crear el proyecto. '+errHint(e)); }
+  finally{ _creando=false; btn.disabled=false; btn.textContent='Crear'; }
 }
 async function eliminar(id){
   const p=await S.getProject(id);
