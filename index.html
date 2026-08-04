@@ -243,8 +243,8 @@ async function abrir(id){
   S.setActiveProject(id);
   const soyDueno = S.currentUser() && p.ownerUid===S.currentUser().uid;
   $('proj-title').textContent=p.nombre;
-  const dueno = soyDueno ? '' : ` · de ${esc(p.ownerNombre||'—')}`;
-  $('proj-meta').innerHTML=`Creado ${fecha(p.createdAt)} · Hoja de costeo: ${p.costeo?'en progreso':'sin empezar'}${dueno}`;
+  const pre = soyDueno ? '' : `De ${esc(p.ownerNombre||'—')} · `;
+  $('proj-meta').innerHTML=`${pre}Hoja de costeo: ${p.costeo?'en progreso':'sin empezar'} · Manual: ${p.manual?'con avance':'sin empezar'}`;
   $('opt-manual').href=`manual.html?p=${id}`;
   $('opt-hoja').href=`hoja-de-costeo.html?p=${id}`;
   $('btn-rename').classList.toggle('hide', !soyDueno);
@@ -270,8 +270,8 @@ async function verAdmin(){
   cont.innerHTML=Object.entries(grupos).map(([k,ps])=>{
     const [nombre,dni]=k.split('||');
     const filas=ps.map(p=>`<div class="proj"><div class="info"><h3>${esc(p.nombre)}</h3>
-      <p>Editado ${fecha(p.updatedAt)} · ${p.costeo?'con datos':'sin datos'}</p></div>
-      <a class="open" href="hoja-de-costeo.html?p=${p.id}">Ver →</a></div>`).join('');
+      <p>Editado ${fecha(p.updatedAt)} · Costeo: ${p.costeo?'✓':'—'} · Manual: ${p.manual?'✓':'—'}</p></div>
+      <button class="open" onclick="abrir('${p.id}')">Ver →</button></div>`).join('');
     return `<div class="owner-group"><h3>${esc(nombre)} <span class="n">· DNI ${esc(dni)||'—'} · ${ps.length} proyecto(s)</span></h3>${filas}</div>`;
   }).join('');
 }
