@@ -1,86 +1,115 @@
-/* store.js — Capa de datos del Programa Impulso
- * Guarda en el navegador (localStorage), por dispositivo.
- * Toda la persistencia pasa por aquí: si algún día se migra a un backend
- * (Firebase/Supabase), solo cambia este archivo, no la interfaz.
+/* store.js — Capa de datos del Programa Impulso (NUBE: Firestore + Auth).
+ * Toda la persistencia pasa por aquí. Métodos asíncronos (devuelven Promesas).
+ *
+ * Modelo de auth:
+ *   - Colaborador: entra con nombre + DNI. Por detrás usa email <dni>@impulso.movadera.pe
+ *     y contraseña = DNI. (Cómodo pero débil: sirve para organizar, no para proteger.)
+ *   - Admin (José Luis): email + contraseña fuerte. Su correo está en ADMIN_EMAILS.
+ *     El admin VE todos los proyectos en modo lectura (las reglas de Firestore le niegan escribir).
  */
-(function (global) {
-  const K = {
-    session: 'impulso.session',
-    users: 'impulso.users',
-    projects: dni => `impulso.projects.${dni}`,
-    costeo: (dni, pid) => `impulso.costeo.${dni}.${pid}`,
-    active: 'impulso.activeProject'
-  };
-  const read = (k, def) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; } catch (e) { return def; } };
-  const write = (k, v) => localStorage.setItem(k, JSON.stringify(v));
-  const now = () => Date.now();
-  const uid = () => 'p' + now().toString(36) + Math.random().toString(36).slice(2, 6);
+(function (g) {
+  const ADMIN_EMAILS = ['jlmv6161@gmail.com'];          // ← correos con rol admin
+  const DNI_DOMAIN = '@impulso.movadera.pe';
+  const dniToEmail = dni => String(dni || '').trim() + DNI_DOMAIN;
   const clean = s => (s || '').toString().trim();
+  const serverTs = () => firebase.firestore.FieldValue.serverTimestamp();
+  const ms = v => (v && v.toMillis) ? v.toMillis() : (v && v.seconds ? v.seconds * 1000 : 0);
+
+  let _profile = null;   // { uid, email, dni, nombre, isAdmin }
+
+  function buildProfile(user, nombreHint) {
+    const email = (user.email || '').toLowerCase();
+    const isAdmin = ADMIN_EMAILS.includes(email);
+    const dni = email.endsWith(DNI_DOMAIN) ? email.slice(0, -DNI_DOMAIN.length) : '';
+    return { uid: user.uid, email, dni, nombre: nombreHint || user.displayName || (isAdmin ? 'Administrador' : ''), isAdmin };
+  }
+
+  const col = () => fb.db.collection('projects');
 
   const Store = {
-    /* ---- sesión / usuario ---- */
-    currentUser() { return read(K.session, null); },
-    login(nombre, dni) {
-      nombre = clean(nombre); dni = clean(dni);
-      if (!nombre || !dni) return null;
-      const users = read(K.users, {});
-      if (!users[dni]) users[dni] = { dni, nombre, createdAt: now() };
-      else users[dni].nombre = nombre;
-      write(K.users, users);
-      const s = { dni, nombre };
-      write(K.session, s);
-      return s;
+    /* Se dispara cuando Firebase resuelve la sesión (al cargar y en cada cambio). */
+    onAuth(cb) {
+      fb.auth.onAuthStateChanged(user => {
+        _profile = user ? buildProfile(user) : null;
+        cb(_profile);
+      });
     },
-    logout() { localStorage.removeItem(K.session); localStorage.removeItem(K.active); },
+    currentUser() { return _profile; },
+    isAdmin() { return !!(_profile && _profile.isAdmin); },
+
+    /* ---- login ---- */
+    async loginColaborador(nombre, dni) {
+      nombre = clean(nombre); dni = clean(dni);
+      if (!nombre || !dni) throw new Error('Escribe tu nombre y tu DNI.');
+      const email = dniToEmail(dni), pass = dni;
+      try {
+        await fb.auth.signInWithEmailAndPassword(email, pass);
+      } catch (e) {
+        if (e.code === 'auth/user-not-found') await fb.auth.createUserWithEmailAndPassword(email, pass);
+        else if (e.code === 'auth/wrong-password') throw new Error('Ese DNI ya está registrado con otro nombre/clave. Verifica el número.');
+        else throw e;
+      }
+      const u = fb.auth.currentUser;
+      if (u.displayName !== nombre) { try { await u.updateProfile({ displayName: nombre }); } catch (e) {} }
+      _profile = buildProfile(u, nombre);
+      return _profile;
+    },
+    async loginAdmin(email, pass) {
+      email = clean(email).toLowerCase();
+      if (!ADMIN_EMAILS.includes(email)) throw new Error('Ese correo no está autorizado como administrador.');
+      if (!pass) throw new Error('Escribe tu contraseña.');
+      try {
+        await fb.auth.signInWithEmailAndPassword(email, pass);
+      } catch (e) {
+        if (e.code === 'auth/user-not-found') await fb.auth.createUserWithEmailAndPassword(email, pass);
+        else if (e.code === 'auth/wrong-password') throw new Error('Contraseña incorrecta.');
+        else throw e;
+      }
+      _profile = buildProfile(fb.auth.currentUser);
+      return _profile;
+    },
+    async logout() { await fb.auth.signOut(); _profile = null; },
 
     /* ---- proyectos ---- */
-    listProjects() {
-      const u = this.currentUser(); if (!u) return [];
-      return read(K.projects(u.dni), []).slice().sort((a, b) => b.updatedAt - a.updatedAt);
+    async listProjects() {
+      const u = _profile; if (!u) return [];
+      const snap = await col().where('ownerUid', '==', u.uid).get();
+      return snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => ms(b.updatedAt) - ms(a.updatedAt));
     },
-    createProject(nombre) {
-      const u = this.currentUser(); if (!u) return null;
-      const list = read(K.projects(u.dni), []);
-      const p = { id: uid(), nombre: clean(nombre) || 'Proyecto sin nombre', createdAt: now(), updatedAt: now() };
-      list.push(p); write(K.projects(u.dni), list);
-      return p;
+    async listAllProjects() {   // solo admin
+      const snap = await col().get();
+      return snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => ms(b.updatedAt) - ms(a.updatedAt));
     },
-    getProject(id) {
-      const u = this.currentUser(); if (!u) return null;
-      return read(K.projects(u.dni), []).find(p => p.id === id) || null;
+    async createProject(nombre) {
+      const u = _profile; if (!u) return null;
+      const ref = await col().add({
+        ownerUid: u.uid, ownerDni: u.dni, ownerNombre: u.nombre,
+        nombre: clean(nombre) || 'Proyecto sin nombre',
+        costeo: null, createdAt: serverTs(), updatedAt: serverTs()
+      });
+      return { id: ref.id, nombre: clean(nombre) };
     },
-    renameProject(id, nombre) {
-      const u = this.currentUser(); if (!u) return;
-      const list = read(K.projects(u.dni), []);
-      const p = list.find(x => x.id === id);
-      if (p) { p.nombre = clean(nombre) || p.nombre; p.updatedAt = now(); write(K.projects(u.dni), list); }
+    async getProject(id) {
+      const d = await col().doc(id).get();
+      return d.exists ? { id: d.id, ...d.data() } : null;
     },
-    deleteProject(id) {
-      const u = this.currentUser(); if (!u) return;
-      const list = read(K.projects(u.dni), []).filter(x => x.id !== id);
-      write(K.projects(u.dni), list);
-      localStorage.removeItem(K.costeo(u.dni, id));
+    async renameProject(id, nombre) {
+      await col().doc(id).update({ nombre: clean(nombre), updatedAt: serverTs() });
     },
-    touchProject(id) {
-      const u = this.currentUser(); if (!u) return;
-      const list = read(K.projects(u.dni), []);
-      const p = list.find(x => x.id === id);
-      if (p) { p.updatedAt = now(); write(K.projects(u.dni), list); }
-    },
-    setActiveProject(id) { write(K.active, id); },
-    getActiveProject() { return read(K.active, null); },
+    async deleteProject(id) { await col().doc(id).delete(); },
 
-    /* ---- datos de la hoja de costeo, por proyecto ---- */
-    loadCosteo(pid) {
-      const u = this.currentUser(); if (!u) return null;
-      return read(K.costeo(u.dni, pid), null);
+    /* ---- datos de la hoja de costeo (guardados dentro del proyecto) ---- */
+    async loadCosteo(id) { const p = await this.getProject(id); return p ? (p.costeo || null) : null; },
+    async saveCosteo(id, state) {
+      await col().doc(id).update({ costeo: state, updatedAt: serverTs() });
     },
-    saveCosteo(pid, state) {
-      const u = this.currentUser(); if (!u) return;
-      write(K.costeo(u.dni, pid), state);
-      this.touchProject(pid);
-    }
+
+    /* ---- proyecto activo (solo navegación, no dato) ---- */
+    setActiveProject(id) { try { localStorage.setItem('impulso.active', id); } catch (e) {} },
+    getActiveProject() { try { return localStorage.getItem('impulso.active'); } catch (e) { return null; } },
+
+    ms  // helper expuesto para formatear fechas en la UI
   };
 
-  global.ImpulsoStore = Store;
+  g.ImpulsoStore = Store;
 })(window);

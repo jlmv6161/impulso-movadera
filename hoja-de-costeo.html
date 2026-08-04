@@ -66,6 +66,10 @@
     input,select{border:0;border-bottom:1px solid #999;border-radius:0}
   }
 </style>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="firebase-init.js"></script>
 <script src="store.js"></script>
 </head>
 <body>
@@ -456,11 +460,10 @@ function calc(){
 }
 
 /* ---------- guardar / cargar ---------- */
-/* ---- proyecto activo (viene del index vía ?p=<id>) ---- */
+/* ---- proyecto activo (en la nube) ---- */
 const _params = new URLSearchParams(location.search);
-const PID  = _params.get('p') || (window.ImpulsoStore && ImpulsoStore.getActiveProject());
-const USER = window.ImpulsoStore ? ImpulsoStore.currentUser() : null;
-const PROJ = (window.ImpulsoStore && USER && PID) ? ImpulsoStore.getProject(PID) : null;
+let PID = _params.get('p') || ImpulsoStore.getActiveProject();
+let USER = null, PROJ = null, READONLY = false;
 
 function estado(){
   const rows = (tb, cls) => [...$(tb).querySelectorAll('tr')].map(tr=>cls.map(c=>tr.querySelector(c)?.value ?? ''));
@@ -473,13 +476,21 @@ function estado(){
     mercado: rows('tbMercado',['.d','.w','.p'])};
 }
 
+const setInd = t => { const i=$('saveind'); if(i) i.textContent=t; };
 let _saveT=null;
-function persist(){ ImpulsoStore.saveCosteo(PID, estado()); const i=$('saveind'); if(i) i.textContent='Guardado ✓'; }
-function autosave(){ const i=$('saveind'); if(i) i.textContent='Guardando…'; clearTimeout(_saveT); _saveT=setTimeout(persist,500); }
-function limpiar(){ if(confirm('¿Vaciar los datos de ESTE proyecto y empezar de nuevo?')){ ImpulsoStore.saveCosteo(PID,null); location.reload(); } }
+async function persist(){
+  if(READONLY) return;
+  try{ await ImpulsoStore.saveCosteo(PID, estado()); setInd('Guardado ✓'); }
+  catch(e){ setInd('⚠ sin conexión — se guardará al reconectar'); }
+}
+function autosave(){ if(READONLY) return; setInd('Guardando…'); clearTimeout(_saveT); _saveT=setTimeout(persist,600); }
+async function limpiar(){
+  if(READONLY) return;
+  if(confirm('¿Vaciar los datos de ESTE proyecto y empezar de nuevo?')){ await ImpulsoStore.saveCosteo(PID,null); location.reload(); }
+}
 
-function cargarDatos(){
-  const d = ImpulsoStore.loadCosteo(PID);
+async function cargarDatos(){
+  const d = await ImpulsoStore.loadCosteo(PID);
   if(!d){ inicial(); return; }
   Object.entries(d.campos||{}).forEach(([k,v])=>{ if($(k)) $(k).value = v; });
   (d.tablero||[]).forEach(r=>{ addTablero(); const tr=$('tbTablero').lastElementChild;
@@ -499,18 +510,37 @@ function inicial(){
   if(PROJ && !$('f_nombre').value) $('f_nombre').value = PROJ.nombre;
   $('f_fecha').valueAsDate = new Date();
 }
-
-/* ---- arranque: exige sesión + proyecto ---- */
-if(!window.ImpulsoStore || !USER || !PID || !PROJ){
-  location.replace('index.html');
-} else {
-  ImpulsoStore.setActiveProject(PID);
-  $('projname').textContent = PROJ.nombre;
-  $('backlink').href = 'index.html?p=' + PID;
-  cargarDatos(); calc();
-  document.addEventListener('input',  ()=>{ calc(); autosave(); });
-  document.addEventListener('change', ()=>{ calc(); autosave(); });
+function aplicarReadonly(){
+  READONLY=true;
+  document.querySelectorAll('input,select,textarea').forEach(el=>el.disabled=true);
+  document.querySelectorAll('.add,.del').forEach(el=>el.style.display='none');
+  const b=document.querySelector('.btns'); if(b){ [...b.children].forEach(x=>{ if(x.textContent.includes('Vaciar')) x.style.display='none'; }); }
+  setInd('Modo lectura (admin)');
 }
+
+/* ---- arranque: espera sesión, valida acceso, carga ---- */
+ImpulsoStore.onAuth(async user=>{
+  if(!user){ location.replace('index.html'); return; }
+  USER=user;
+  PID = _params.get('p') || ImpulsoStore.getActiveProject();
+  if(!PID){ location.replace('index.html'); return; }
+  PROJ = await ImpulsoStore.getProject(PID);
+  if(!PROJ){ location.replace('index.html'); return; }
+  const soyDueno = PROJ.ownerUid===user.uid;
+  if(!soyDueno && !user.isAdmin){ location.replace('index.html'); return; }
+  ImpulsoStore.setActiveProject(PID);
+  $('projname').textContent = PROJ.nombre + (soyDueno?'':' · '+(PROJ.ownerNombre||''));
+  $('backlink').textContent = soyDueno ? '← Volver al proyecto' : '← Volver al panel';
+  $('backlink').href = 'index.html' + (soyDueno?('?p='+PID):'');
+  await cargarDatos();
+  calc();
+  if(soyDueno){
+    document.addEventListener('input',  ()=>{ calc(); autosave(); });
+    document.addEventListener('change', ()=>{ calc(); autosave(); });
+  } else {
+    aplicarReadonly();
+  }
+});
 </script>
 </body>
 </html>
