@@ -266,13 +266,15 @@ async function verAdmin(){
   $('admin-count').textContent=`(${all.length})`;
   if(!all.length){ cont.innerHTML='<div class="empty">Aún no hay proyectos del equipo.</div>'; return; }
   const grupos={};
-  all.forEach(p=>{ const k=(p.ownerNombre||'—')+'||'+(p.ownerDni||''); (grupos[k]=grupos[k]||[]).push(p); });
-  cont.innerHTML=Object.entries(grupos).map(([k,ps])=>{
-    const [nombre,dni]=k.split('||');
+  all.forEach(p=>{ const k=p.ownerDni||'—'; (grupos[k]=grupos[k]||[]).push(p); });   // agrupa por DNI
+  cont.innerHTML=Object.entries(grupos).map(([dni,ps])=>{
+    const nombre=ps[0].ownerNombre||'—';   // ps viene ordenado por edición reciente
+    const otros=[...new Set(ps.map(p=>p.ownerNombre).filter(n=>n&&n!==nombre))];
+    const alias=otros.length?` <span class="n">(también: ${otros.map(esc).join(', ')})</span>`:'';
     const filas=ps.map(p=>`<div class="proj"><div class="info"><h3>${esc(p.nombre)}</h3>
       <p>Editado ${fecha(p.updatedAt)} · Costeo: ${p.costeo?'✓':'—'} · Manual: ${p.manual?'✓':'—'}</p></div>
       <button class="open" onclick="abrir('${p.id}')">Ver →</button></div>`).join('');
-    return `<div class="owner-group"><h3>${esc(nombre)} <span class="n">· DNI ${esc(dni)||'—'} · ${ps.length} proyecto(s)</span></h3>${filas}</div>`;
+    return `<div class="owner-group"><h3>${esc(nombre)}${alias} <span class="n">· DNI ${esc(dni)} · ${ps.length} proyecto(s)</span></h3>${filas}</div>`;
   }).join('');
 }
 

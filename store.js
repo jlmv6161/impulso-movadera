@@ -65,8 +65,11 @@
       try { await signInOrCreate(dniToEmail(dni), dni); }
       catch (e) { if (e.wrongpass) throw new Error('Ese DNI ya está registrado con otra clave. Verifica el número.'); throw e; }
       const u = fb.auth.currentUser;
-      if (u.displayName !== nombre) { try { await u.updateProfile({ displayName: nombre }); } catch (_) {} }
-      _profile = buildProfile(u, nombre);
+      // El DNI es la identidad. El nombre se fija SOLO la primera vez y luego se conserva,
+      // así un error de tipeo en el nombre en un ingreso posterior no cambia nada.
+      let nombreFinal = u.displayName;
+      if (!nombreFinal) { try { await u.updateProfile({ displayName: nombre }); } catch (_) {} nombreFinal = nombre; }
+      _profile = buildProfile(u, nombreFinal);
       return _profile;
     },
     async loginAdmin(email, pass) {
