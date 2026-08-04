@@ -11,9 +11,10 @@ $ErrorActionPreference = 'Stop'
 $origen  = 'C:\Users\jlmv6\Documents\Claude\Impulso Base Business'
 $destino = Split-Path -Parent $MyInvocation.MyCommand.Path
 
+# La calculadora de regalias NO se publica: es del Comite (topes, margenes,
+# que pasa si el colaborador se va). Se usa local. Solo van las del colaborador.
 $archivos = @(
     @{src='hoja-de-costeo.html';           dst='hoja-de-costeo.html'},
-    @{src='calculadora-regalias.html';     dst='calculadora-regalias.html'},
     @{src='Manual-Presentacion-Propuestas.html'; dst='manual.html'}
 )
 
