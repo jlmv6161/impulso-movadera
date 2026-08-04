@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Manual de Presentación de Propuestas — Programa Impulso | Movadera</title>
+<style>
+  :root{
+    --navy:#16334A; --teal:#137A6D; --teal-soft:#E9F4F2; --gold:#B7791F; --gold-soft:#FBF3E2;
+    --ink:#1c2b36; --muted:#5f7280; --line:#c9d6dd; --linefill:#8fa5b0;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  body{margin:0;font-family:'Segoe UI',system-ui,-apple-system,Arial,sans-serif;color:var(--ink);
+       font-size:11pt;line-height:1.5;background:#e9eef1}
+
+  /* --- toolbar solo en pantalla --- */
+  .toolbar{position:sticky;top:0;z-index:50;background:var(--navy);color:#fff;padding:12px 20px;
+           display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+  .toolbar p{margin:0;font-size:.82rem;opacity:.85}
+  .toolbar button{background:#fff;color:var(--navy);border:0;padding:9px 18px;border-radius:7px;
+                  font-weight:700;font-size:.9rem;cursor:pointer;font-family:inherit}
+  .toolbar button:hover{filter:brightness(.95)}
+
+  .page{background:#fff;width:210mm;min-height:297mm;margin:16px auto;padding:18mm 16mm;
+        box-shadow:0 2px 14px rgba(0,0,0,.13)}
+
+  h1{font-size:22pt;margin:0 0 4px;color:var(--navy);letter-spacing:.3px}
+  .subtitle{font-size:11pt;color:var(--muted);margin:0 0 18px}
+  h2{font-size:13pt;color:#fff;background:var(--navy);margin:0 0 12px;padding:7px 12px;border-radius:6px;
+     display:flex;align-items:center;gap:10px}
+  h2 .step{background:var(--teal);width:26px;height:26px;border-radius:50%;display:inline-flex;
+           align-items:center;justify-content:center;font-size:11pt;flex-shrink:0}
+  h3{font-size:11.5pt;color:var(--navy);margin:16px 0 6px;border-bottom:2px solid var(--teal-soft);padding-bottom:3px}
+  p{margin:6px 0}
+  .lead{font-size:11pt;color:var(--ink)}
+  strong{color:var(--navy)}
+
+  .step-block{margin-bottom:20px;break-inside:avoid}
+  .why{background:var(--teal-soft);border-left:3px solid var(--teal);padding:8px 12px;border-radius:0 6px 6px 0;
+       font-size:9.8pt;color:#0f5a50;margin:10px 0}
+  .why b{color:#0b443c}
+  .warn{background:var(--gold-soft);border-left:3px solid var(--gold);padding:8px 12px;border-radius:0 6px 6px 0;
+        font-size:9.8pt;color:#6b5314;margin:10px 0}
+  .warn b{color:#4a390b}
+
+  /* campos para llenar */
+  label{display:block;font-size:8.5pt;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);
+        font-weight:700;margin:10px 0 2px}
+  .fill{border-bottom:1.5px solid var(--linefill);min-height:20px;margin-bottom:4px}
+  .fill.tall{min-height:44px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:6px 22px}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px 22px}
+  .box{border:1.5px solid var(--line);border-radius:7px;padding:12px 14px;margin:10px 0}
+
+  table{width:100%;border-collapse:collapse;margin:8px 0;font-size:10pt}
+  th{background:var(--teal-soft);color:var(--navy);text-align:left;padding:6px 8px;font-size:8.5pt;
+     text-transform:uppercase;letter-spacing:.4px;border:1px solid var(--line)}
+  td{border:1px solid var(--line);padding:0;height:30px}
+  td.lbl{background:#f4f8f9;font-weight:600;padding:5px 8px;color:var(--navy);height:auto}
+  td.filled{padding:5px 8px;height:auto}
+  td .cell{padding:5px 8px;min-height:28px}
+  .n{text-align:right}
+  .ref td{height:auto;padding:5px 8px}
+  .ref{font-size:9.5pt}
+  .ref caption{caption-side:top;text-align:left;font-size:8.5pt;color:var(--muted);margin-bottom:4px;font-style:italic}
+
+  .formula{font-family:'Consolas',monospace;background:var(--navy);color:#b7e4db;padding:8px 12px;
+           border-radius:6px;font-size:9.5pt;margin:8px 0;white-space:pre-wrap}
+  .chk{list-style:none;padding:0;margin:8px 0}
+  .chk li{padding:5px 0;font-size:10.5pt;display:flex;gap:10px;align-items:flex-start}
+  .chk .cb{width:15px;height:15px;border:1.6px solid var(--navy);border-radius:3px;flex-shrink:0;margin-top:2px}
+  .pill{display:inline-block;font-size:8pt;font-weight:800;letter-spacing:.4px;padding:2px 8px;border-radius:20px;
+        background:var(--teal-soft);color:#0f5a50;vertical-align:2px;margin-left:6px}
+
+  .big-verdict{border:2px solid var(--navy);border-radius:9px;padding:0;overflow:hidden;margin-top:10px}
+  .big-verdict .head{background:var(--navy);color:#fff;padding:8px 14px;font-weight:700;font-size:11.5pt}
+  .big-verdict .opt{display:grid;grid-template-columns:24px 1fr;gap:12px;padding:10px 14px;border-bottom:1px solid var(--line);align-items:start}
+  .big-verdict .opt:last-child{border-bottom:0}
+  .big-verdict .cb{width:16px;height:16px;border:1.6px solid var(--navy);border-radius:3px;margin-top:3px}
+
+  .footer-note{font-size:8.5pt;color:var(--muted);text-align:center;margin-top:20px;border-top:1px solid var(--line);padding-top:8px}
+  .page-num{text-align:right;font-size:8pt;color:var(--muted);margin-top:14px}
+  .ex{font-size:9.3pt;color:var(--muted);font-style:italic}
+
+  @media print{
+    body{background:#fff;font-size:10.5pt}
+    .toolbar{display:none}
+    .page{width:auto;min-height:auto;margin:0;padding:0;box-shadow:none;page-break-after:always}
+    .page:last-child{page-break-after:auto}
+    h2{-webkit-print-color-adjust:exact}
+    .step-block{break-inside:avoid}
+  }
+  @page{size:A4;margin:14mm 12mm}
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <p><b>Manual de Presentación de Propuestas — Programa Impulso.</b> Imprime este documento (o guárdalo como PDF) y entrégalo llenado.</p>
+  <button onclick="window.print()">🖨 Imprimir / Guardar PDF</button>
+</div>
+
+<!-- ═══════════════ PÁGINA 1 — PORTADA + CÓMO USARLO ═══════════════ -->
+<section class="page">
+  <h1>Manual de Presentación de Propuestas</h1>
+  <p class="subtitle">Programa Impulso · Movadera SAC — cómo llevar una idea hasta un producto vendible y ganarte tu regalía</p>
+
+  <div class="box">
+    <div class="grid3">
+      <div><label>Producto propuesto</label><div class="fill"></div></div>
+      <div><label>Tu nombre (autor)</label><div class="fill"></div></div>
+      <div><label>Fecha</label><div class="fill"></div></div>
+    </div>
+  </div>
+
+  <p class="lead">Este manual te lleva de la mano por <strong>8 pasos</strong>. Si los sigues en orden y llenas
+  todos los campos, entregas una propuesta que el Comité puede evaluar de verdad — y que tiene
+  posibilidad real de convertirse en producto del catálogo.</p>
+
+  <div class="why">
+    <b>¿Por qué importa hacerlo bien?</b> Si tu producto entra al catálogo, se fabrica y se vende, tú
+    cobras una <b>regalía del 3 % de cada venta</b> mientras trabajes en Movadera (y 1.5 % que se mantiene
+    incluso si te vas, hasta 3 años). Una propuesta bien hecha es plata en tu bolsillo.
+  </div>
+
+  <h3>Qué es un producto que SÍ sirve (los 4 filtros)</h3>
+  <p>Antes de trabajar tu idea, que pase estos 4. Si falla uno, cámbiala ahora y te ahorras semanas:</p>
+  <table>
+    <tr><td class="lbl" style="width:42%">1. Se fabrica igual siempre</td><td class="filled">La décima unidad sale igual que la primera, sin rediseñar.</td></tr>
+    <tr><td class="lbl">2. No necesita medir la casa del cliente</td><td class="filled">El despiece se hace UNA vez y se congela. Si hay que medir cada vez, es proyecto, no producto.</td></tr>
+    <tr><td class="lbl">3. Cabe en el tiempo muerto del taller</td><td class="filled">Se puede producir cuando el equipo está instalando en obra y el taller está vacío.</td></tr>
+    <tr><td class="lbl">4. La gente ya compra algo parecido</td><td class="filled">Existe un mercado. Si nadie lo vende, ojo: puede que no haya demanda.</td></tr>
+  </table>
+
+  <h3>Cómo se decide tu propuesta</h3>
+  <p>El Comité (José Luis + Khybanna + jefe de taller) te puntúa de 1 a 5 en cada criterio.
+  <strong>Necesitas 70 de 100 para pasar.</strong></p>
+  <table class="ref">
+    <tr><th>Criterio</th><th class="n">Peso</th><th>Qué miran</th></tr>
+    <tr><td>Margen</td><td class="n">30 %</td><td>¿Pasa el 55 % con holgura o justo?</td></tr>
+    <tr><td>Repetibilidad</td><td class="n">20 %</td><td>¿Se fabrica igual la 10ª vez?</td></tr>
+    <tr><td>Demanda</td><td class="n">20 %</td><td>¿Trajiste 3 precios de mercado?</td></tr>
+    <tr><td>Encaje en tiempo ocioso</td><td class="n">15 %</td><td>¿Se hace sin robar horas a los proyectos?</td></tr>
+    <tr><td>Diferenciación Movadera</td><td class="n">15 %</td><td>¿Aprovecha nuestro acabado premium?</td></tr>
+  </table>
+
+  <div class="warn">
+    <b>MVP = Producto Mínimo Viable.</b> No te enamores de la versión perfecta con 10 opciones. El
+    objetivo es la <b>versión más simple que se pueda vender y deje margen</b>. Una medida, un material,
+    un acabado. Después se mejora. Este manual te ayuda a definir justamente esa versión mínima.
+  </div>
+
+  <div class="page-num">Manual de Presentación de Propuestas · pág. 1</div>
+</section>
+
+<!-- ═══════════════ PÁGINA 2 — PASOS 1 y 2 ═══════════════ -->
+<section class="page">
+  <div class="step-block">
+    <h2><span class="step">1</span> La idea: qué es y para quién</h2>
+    <p>Un producto no es un dibujo bonito: es una solución que alguien <strong>paga</strong>. Ojo con una
+    trampa clásica de los regalos — <strong>quien compra no siempre es quien usa</strong>. Diséñalo para
+    convencer a quien saca la billetera.</p>
+
+    <div class="grid2">
+      <div><label>¿Qué es? (en una frase)</label><div class="fill tall"></div></div>
+      <div><label>¿Qué problema resuelve?</label><div class="fill tall"></div></div>
+      <div><label>¿Quién lo COMPRA? (paga)</label><div class="fill"></div></div>
+      <div><label>¿Quién lo USA?</label><div class="fill"></div></div>
+      <div><label>¿Dónde lo pone / usa?</label><div class="fill"></div></div>
+      <div><label>¿Por qué lo compraría?</label><div class="fill"></div></div>
+    </div>
+
+    <label>Las 3 restricciones duras (esto guía todo el diseño)</label>
+    <table>
+      <tr><td class="lbl" style="width:40%">Medida máxima (por transporte / dónde va)</td><td></td></tr>
+      <tr><td class="lbl">Precio objetivo (cuánto pagaría la gente)</td><td></td></tr>
+      <tr><td class="lbl">Tiempo máximo de fabricación</td><td></td></tr>
+    </table>
+    <div class="why"><b>Diseñar con el precio objetivo desde el inicio</b> evita el error N.º 1: hacer algo
+    lindo y descubrir al final que cuesta el doble de lo que la gente paga. El precio manda sobre el diseño.</div>
+  </div>
+
+  <div class="step-block">
+    <h2><span class="step">2</span> Diseño y medidas</h2>
+    <p>No hace falta AutoCAD. <strong>Papel cuadriculado y lápiz sirven.</strong> Lo obligatorio:</p>
+    <ul class="chk">
+      <li><span class="cb"></span>Tres vistas: <strong>frente, lado y planta</strong> (desde arriba)</li>
+      <li><span class="cb"></span>Todas las medidas en <strong>milímetros</strong>, por fuera del mueble</li>
+      <li><span class="cb"></span>Un dibujo en <strong>perspectiva</strong> (aunque sea torcido) para que se entienda</li>
+      <li><span class="cb"></span>Marcar con plumón <strong>qué caras llevan canto</strong> (las que se ven)</li>
+    </ul>
+
+    <label>Espacio para tu boceto (o adjunta una hoja aparte / foto del prototipo)</label>
+    <div class="box" style="height:150px"></div>
+
+    <div class="warn"><b>Piensa en S / M / L.</b> Si tu producto puede salir en tres tamaños con el mismo
+    despiece cambiando solo un largo, márcalo. Es más catálogo con el mismo trabajo de diseño y te da
+    una escalera de precios. Para el MVP, elige <b>UNA sola medida</b> para arrancar.</div>
+  </div>
+
+  <div class="page-num">pág. 2</div>
+</section>
+
+<!-- ═══════════════ PÁGINA 3 — PASO 3 y 4 ═══════════════ -->
+<section class="page">
+  <div class="step-block">
+    <h2><span class="step">3</span> Material: ¿cuántos salen de una plancha?</h2>
+    <p>Esta es la forma más exacta de costear el material de un producto repetible. Dibuja la plancha en
+    cuadriculado, acomoda TODAS las piezas de tu producto, y cuenta cuántos productos <strong>completos</strong>
+    salen. Así el retazo real de tu diseño ya queda incluido.</p>
+    <div class="formula">Costo de material por unidad = precio de la plancha ÷ productos completos por plancha</div>
+
+    <label>Despiece — lista todas las piezas</label>
+    <table>
+      <tr><th style="width:8%">#</th><th>Pieza</th><th class="n" style="width:12%">Cant.</th><th class="n" style="width:18%">Largo × ancho (mm)</th><th style="width:22%">Material</th><th class="n" style="width:14%">Canto (ml)</th></tr>
+      <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    </table>
+
+    <div class="grid2">
+      <div><label>Material principal elegido</label><div class="fill"></div></div>
+      <div><label>Productos completos que salen de 1 plancha</label><div class="fill"></div></div>
+    </div>
+
+    <table class="ref">
+      <caption>Precios de tablero — jul-2026, como se compran (con IGV). Plancha melamina = 2.44 × 2.15 m = 5.25 m²</caption>
+      <tr><th>Material</th><th class="n">Plancha</th><th class="n">Por m²</th><th>Material</th><th class="n">Plancha</th></tr>
+      <tr><td>Melamina 18 blanca</td><td class="n">S/ 180</td><td class="n">S/ 34</td><td>Fingerjoint pino</td><td class="n">S/ 200</td></tr>
+      <tr><td>Melamina 18 blanca RH</td><td class="n">S/ 300</td><td class="n">S/ 57</td><td>Fingerjoint shihuahuaco</td><td class="n">S/ 390 <b>+ IGV</b></td></tr>
+      <tr><td>Melamina 18 color</td><td class="n">S/ 300</td><td class="n">S/ 57</td><td colspan="2" style="font-size:8.5pt;color:var(--muted)">⚠️ El shihuahuaco es 390 <b>+ IGV = S/ 460</b> (los demás ya incluyen IGV). Fingerjoint + S/ 100 flete/pedido</td></tr>
+    </table>
+    <p class="ex">MDF, enchapados y madera maciza: precios aún sin confirmar → pregunta antes de costear con ellos.</p>
+  </div>
+
+  <div class="step-block">
+    <h2><span class="step">4</span> Manufactura: horas cronometradas</h2>
+    <p><strong>No estimes el tiempo. Mídelo.</strong> Haz una unidad de prueba con cronómetro. Dos reglas:
+    cronometra la <strong>segunda</strong> unidad (la primera siempre sale lenta), y si vas a producir en
+    lote, cronometra el lote completo y divide.</p>
+
+    <label>¿Cuántas unidades hiciste en la prueba cronometrada?  <span class="pill">lote</span></label>
+    <div class="fill" style="max-width:120px"></div>
+
+    <table>
+      <tr><th>Fase (solo trabajo del taller)</th><th class="n" style="width:26%">Min del lote</th><th class="n" style="width:26%">÷ unidades = min/unidad</th></tr>
+      <tr><td class="lbl">Canteado / armado</td><td></td><td></td></tr>
+      <tr><td class="lbl">Perforado</td><td></td><td></td></tr>
+      <tr><td class="lbl">Lijado</td><td></td><td></td></tr>
+      <tr><td class="lbl">Acabado (pintura / laca / aceite)</td><td></td><td></td></tr>
+      <tr><td class="lbl">Empaque</td><td></td><td></td></tr>
+      <tr><td class="lbl" style="background:#eaf3f1;font-weight:700">TOTAL minutos por unidad</td><td colspan="2"></td></tr>
+    </table>
+    <div class="warn"><b>El corte / ruteado CNC NO va aquí.</b> El CNC <b>se terceriza</b> (no lo hace el
+    taller), así que es un <b>costo de proveedor</b> — va en el Paso 5, no como horas de mano de obra.
+    En esta tabla pon solo las fases que hace el equipo con sus manos.</div>
+
+    <div class="formula">Días-hombre = minutos por unidad ÷ 480     (un día de trabajo = 8 h = 480 min)</div>
+    <div class="grid2">
+      <div><label>Días-hombre por unidad</label><div class="fill"></div></div>
+      <div><label>Costo mano de obra = días-hombre × S/ 120</label><div class="fill"></div></div>
+    </div>
+    <div class="warn"><b>¿Por qué S/ 120 y no S/ 190 como el Cotizador?</b> El Cotizador cotiza proyectos a
+    medida y ahí van cargados alquiler y servicios. El base business se produce en <b>tiempo ocioso</b>,
+    cuando eso ya está pagado igual — por eso aquí se cuenta solo la mano de obra, y por eso se te exige
+    un margen más alto (55 %): ese margen es el que junta los costos fijos del mes.</div>
+  </div>
+
+  <div class="page-num">pág. 3</div>
+</section>
+
+<!-- ═══════════════ PÁGINA 4 — PASO 5 y 6 ═══════════════ -->
+<section class="page">
+  <div class="step-block">
+    <h2><span class="step">5</span> Costos de proveedores: canto, herrajes e insumos</h2>
+    <p>Además del tablero, todo lo demás cuesta. <strong>El error que más mata propuestas es olvidar lo
+    chico:</strong> cola, tornillos, lija, y el flete. Si no sabes un precio, <strong>pregúntalo — no lo
+    inventes.</strong></p>
+
+    <table>
+      <tr><th style="width:44%">Ítem</th><th class="n">Cantidad</th><th class="n">Precio unit. (S/)</th><th class="n">Subtotal (S/)</th></tr>
+      <tr><td class="lbl" style="font-weight:400">CNC tercerizado (por plancha o por pieza)</td><td></td><td></td><td></td></tr>
+      <tr><td class="lbl" style="font-weight:400">Tapacanto (ml)</td><td></td><td></td><td></td></tr>
+      <tr><td></td><td></td><td></td><td></td></tr>
+      <tr><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="lbl" style="font-weight:400">Acabado (por m² de cara)</td><td></td><td></td><td></td></tr>
+      <tr><td class="lbl" style="background:#eaf3f1;font-weight:700">TOTAL proveedores + insumos</td><td colspan="3"></td></tr>
+    </table>
+    <div class="warn"><b>CNC tercerizado — cómo cotizarlo:</b> los servicios de ruteado en Lima cobran
+    <b>por plancha cortada</b> (rango ~S/ 90–150) o por hora de máquina. Reparte ese costo entre las
+    piezas que salen de la plancha. ⚠️ Pregunta por el <b>recargo por madera dura</b>: el shihuahuaco
+    desgasta las fresas mucho más rápido y algunos cobran extra.</div>
+
+    <table class="ref">
+      <caption>Precios de referencia (con IGV) — confírmalos en la pestaña "Datos base" del Cotizador</caption>
+      <tr><th>Ítem</th><th class="n">Precio</th><th>Ítem</th><th class="n">Precio</th></tr>
+      <tr><td>Bisagra Ducasse 3D premium</td><td class="n">S/ 9 / par</td><td>FIXALL Soudal</td><td class="n">S/ 29 / tubo</td></tr>
+      <tr><td>Corredera telescópica 25–60 cm</td><td class="n">S/ 10–26 / par</td><td>Sellador acrílico</td><td class="n">S/ 12</td></tr>
+      <tr><td>Aceite Rubio Monocoat ⚠️</td><td class="n">~S/ 16 / m²</td><td>Thinner 3 L</td><td class="n">S/ 18</td></tr>
+      <tr><td colspan="4" style="font-size:8.5pt;color:var(--muted)">⚠️ Sin precio oficial aún: tiradores, tubos, pistones, patas, correderas ocultas, push-open, gola → preguntar</td></tr>
+    </table>
+  </div>
+
+  <div class="step-block">
+    <h2><span class="step">6</span> Empaque: cómo llega al cliente</h2>
+    <p>El empaque no es opcional ni un detalle final: en un producto de regalo, <strong>la caja es parte
+    del producto</strong>, y si hay envío a provincia, define si el negocio es viable.</p>
+
+    <div class="grid2">
+      <div><label>¿Cómo se entrega?</label>
+        <table><tr><td class="filled">☐ Armado &nbsp;&nbsp; ☐ Flat-pack (desarmado, con manual) &nbsp;&nbsp; ☐ En caja de regalo</td></tr></table>
+      </div>
+      <div><label>¿Se puede regalar sin envolver?</label>
+        <table><tr><td class="filled">☐ Sí &nbsp;&nbsp; ☐ No — ¿qué le falta?</td></tr></table>
+      </div>
+    </div>
+
+    <label>Costo de empaque por unidad</label>
+    <table>
+      <tr><th style="width:60%">Elemento (caja, papel, esquineros, etiqueta, manual...)</th><th class="n">Costo (S/)</th></tr>
+      <tr><td></td><td></td></tr>
+      <tr><td></td><td></td></tr>
+      <tr><td class="lbl" style="background:#eaf3f1;font-weight:700">TOTAL empaque</td><td></td></tr>
+    </table>
+
+    <div class="warn"><b>Si va a provincia:</b> Olva y Shalom cobran por <b>peso volumétrico</b> — una caja
+    grande factura más de lo que pesa. Por eso un producto grande casi siempre necesita
+    <b>flat-pack</b> (desarmado + manual de armado). <b>El envío nunca se subsidia:</b> se cotiza aparte y
+    lo paga el cliente, no entra en tu margen.</div>
+  </div>
+
+  <div class="page-num">pág. 4</div>
+</section>
+
+<!-- ═══════════════ PÁGINA 5 — PASO 7 PRECIO ═══════════════ -->
+<section class="page">
+  <div class="step-block">
+    <h2><span class="step">7</span> PVP: cómo poner el precio</h2>
+
+    <h3>Primero: junta el costo directo</h3>
+    <table>
+      <tr><td class="lbl" style="width:60%">(A) Tablero por unidad</td><td class="n"></td></tr>
+      <tr><td class="lbl">(B) Canto, herrajes e insumos</td><td class="n"></td></tr>
+      <tr><td class="lbl">(C) Mano de obra (días-hombre × S/ 120)</td><td class="n"></td></tr>
+      <tr><td class="lbl">(D) Empaque</td><td class="n"></td></tr>
+      <tr><td class="lbl">(E) Merma = (A+B+C+D) × 5 %</td><td class="n"></td></tr>
+      <tr><td class="lbl" style="background:#eaf3f1;font-weight:700">COSTO DIRECTO = A+B+C+D+E</td><td class="n"></td></tr>
+    </table>
+    <div class="warn"><b>Sobre el IGV:</b> pon los costos <b>con IGV</b> (como los pagas). El margen y el
+    precio se comparan siempre <b>SIN IGV</b> (el IGV no es tuyo, se lo devuelves a SUNAT). Esto hace que
+    tu margen salga un poco menor que el real — a propósito: si pasa así, pasa seguro.</div>
+
+    <h3>Ahora calcula TRES precios, no uno</h3>
+
+    <div class="box">
+      <p style="margin-top:0"><strong>Precio A — el piso (por costo).</strong> El mínimo. Debajo de esto no se vende.</p>
+      <div class="formula">Precio SIN IGV = Costo directo ÷ (1 − margen)     ·     Precio CON IGV = × 1.18
+Directa: ÷ 0.45  (55%)      B2B: ÷ 0.55  (45%)      Retail: ÷ 0.70  (30%)</div>
+      <p class="warn" style="margin-bottom:0"><b>⚠️ SE DIVIDE, NO SE MULTIPLICA.</b> "Costo + 55 %" está MAL
+      (eso da 45 % de margen). Costo S/ 47 ÷ 0.45 = <b>S/ 104</b>. Si multiplicaras por 1.55 te daría S/ 73
+      y perderías plata sin darte cuenta.</p>
+    </div>
+    <div class="grid3">
+      <div><label>Margen del canal</label><div class="fill"></div></div>
+      <div><label>Precio A sin IGV</label><div class="fill"></div></div>
+      <div><label>Precio A con IGV</label><div class="fill"></div></div>
+    </div>
+
+    <div class="box">
+      <p style="margin-top:0"><strong>Precio B — el techo (por mercado).</strong> Trae 3 productos parecidos
+      con foto y precio. Ese es el precio que la gente <em>ya</em> paga. No lo inventes: existe allá afuera.</p>
+      <table>
+        <tr><th>Producto comparable</th><th style="width:26%">Dónde lo viste</th><th class="n" style="width:18%">Precio</th></tr>
+        <tr><td></td><td></td><td></td></tr>
+        <tr><td></td><td></td><td></td></tr>
+        <tr><td></td><td></td><td></td></tr>
+      </table>
+    </div>
+
+    <div class="box">
+      <p style="margin:0"><strong>Precio C — la prima Movadera (por valor).</strong> Si tu producto se ve
+      claramente mejor (mejor canto, herraje o acabado) que lo del mercado, puedes pedir <strong>20–40 %
+      más</strong>… pero solo si <strong>se nota en la foto</strong>. Si no se nota, no lo cobres.</p>
+    </div>
+
+    <h3>Decisión del precio</h3>
+    <table class="ref">
+      <tr><th>Situación</th><th>Qué hacer</th></tr>
+      <tr><td>Precio A &lt; Precio B ✅</td><td>Perfecto. Precio final entre A y B, más cerca de B.</td></tr>
+      <tr><td>A ≈ B ⚠️</td><td>Justo. Baja costo: menos piezas, mejor aprovechamiento de plancha, lote más grande.</td></tr>
+      <tr><td>A &gt; B ❌</td><td>No pasa. Rediseña más barato, o justifica con acabado (C), o la idea no va.</td></tr>
+    </table>
+    <div class="why"><b>Rematar el precio:</b> redondea <b>hacia arriba</b> y en cifra de venta: S/ 104 →
+    <b>S/ 129</b>, nunca S/ 105 ni hacia abajo. Y recuerda: el precio no baja después. Subir un precio mal
+    puesto es carísimo — ponlo bien desde el inicio.</div>
+  </div>
+
+  <div class="page-num">pág. 5</div>
+</section>
+
+<!-- ═══════════════ PÁGINA 6 — PASO 8: FICHA MVP ═══════════════ -->
+<section class="page">
+  <div class="step-block">
+    <h2><span class="step">8</span> Definición del MVP — resultado final</h2>
+    <p>Esta es la hoja resumen. Con estos números el Comité decide. <strong>Consejo:</strong> corre primero
+    todo en la <em>hoja-de-costeo.html</em>, que calcula solo, y luego copia los números aquí.</p>
+
+    <div class="box">
+      <div class="grid2">
+        <div><label>Producto (versión mínima / MVP)</label><div class="fill"></div></div>
+        <div><label>Canal</label><table><tr><td class="filled" style="font-size:9.5pt">☐ Directa &nbsp; ☐ B2B &nbsp; ☐ Retail</td></tr></table></div>
+      </div>
+
+      <table style="margin-top:10px">
+        <tr><td class="lbl" style="width:58%">Precio de venta final (con IGV)</td><td class="n"></td></tr>
+        <tr><td class="lbl">Precio sin IGV (÷ 1.18)</td><td class="n"></td></tr>
+        <tr><td class="lbl">− Costo directo</td><td class="n"></td></tr>
+        <tr><td class="lbl" style="background:#eaf3f1;font-weight:700">= MARGEN BRUTO (sin IGV)</td><td class="n"></td></tr>
+        <tr><td class="lbl">Margen en % &nbsp; <span style="font-weight:400;font-size:9pt">(mínimo: directa 55 % · B2B 45 % · retail 30 %)</span></td><td class="n"></td></tr>
+        <tr><td class="lbl">¿Pasa el umbral del canal?</td><td class="filled n" style="font-weight:700">☐ SÍ &nbsp;&nbsp; ☐ NO</td></tr>
+        <tr><td class="lbl">Tu regalía = precio sin IGV × 3 %</td><td class="n"></td></tr>
+        <tr><td class="lbl">Unidades que crees vender al mes</td><td class="n"></td></tr>
+        <tr><td class="lbl">Tu regalía estimada AL MES</td><td class="n"></td></tr>
+      </table>
+    </div>
+
+    <label>Si NO pasa — el Comité te devolverá con el número exacto. Anota tu plan:</label>
+    <div class="fill tall"></div>
+    <p class="ex">Dos caminos siempre: subir el precio a costo÷(1−margen)×1.18, o bajar el costo (menos piezas / mejor plancha / lote más grande). La idea sigue siendo tuya: corriges y vuelves a presentar.</p>
+  </div>
+
+  <div class="step-block">
+    <h3>Cesión de derechos</h3>
+    <div class="box" style="font-size:9.5pt;color:var(--muted)">
+      Al presentar esta propuesta, el autor acepta que, si el diseño es aceptado, los derechos
+      patrimoniales sobre él pasan a Movadera SAC en los términos del Reglamento del Programa Impulso,
+      cuya contraprestación es la regalía indicada arriba. El autor declara que el diseño es de su autoría.
+      <div class="grid2" style="margin-top:14px">
+        <div><label>Firma del autor</label><div class="fill tall"></div></div>
+        <div><label>Firma Movadera / fecha</label><div class="fill tall"></div></div>
+      </div>
+      <p style="font-size:8.5pt;margin-bottom:0">⚠️ Texto referencial — la versión legal final la valida la empresa.</p>
+    </div>
+  </div>
+
+  <div class="page-num">pág. 6</div>
+</section>
+
+<!-- ═══════════════ PÁGINA 7 — EJEMPLO + CHECKLIST ═══════════════ -->
+<section class="page">
+  <h2 style="background:var(--teal)"><span class="step" style="background:var(--navy)">✓</span> Ejemplo real — Placa de Nacimiento Grabada</h2>
+  <p>Así se ve una propuesta bien hecha. Es uno de los productos ya costeados de la línea de regalos.</p>
+
+  <div class="grid2">
+    <div class="box">
+      <h3 style="margin-top:0">Qué es y para quién</h3>
+      <p style="font-size:10pt"><strong>Qué:</strong> tabla 30×20 cm con el nombre, fecha, hora, peso y talla
+      del bebé grabados. Llega en caja lista para regalar.<br>
+      <strong>Compra:</strong> amiga, tía, madrina, o la oficina.<br>
+      <strong>Usa:</strong> la mamá, que la fotografía y publica.<br>
+      <strong>Restricciones:</strong> 30×20 cm · objetivo ~S/ 170 · ~47 min.</p>
+    </div>
+    <div class="box">
+      <h3 style="margin-top:0">Manufactura del taller — 35 min = 0.073 días-hombre</h3>
+      <table class="ref" style="margin:0">
+        <tr><td>Armar archivo con los datos</td><td class="n">10 min</td></tr>
+        <tr><td>Lijado</td><td class="n">12 min</td></tr>
+        <tr><td>Aceitado</td><td class="n">5 min</td></tr>
+        <tr><td>Empaque</td><td class="n">8 min</td></tr>
+        <tr><td style="color:var(--muted);font-style:italic">CNC grabado → tercerizado (ver costo)</td><td class="n" style="color:var(--muted)">—</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="box">
+      <h3 style="margin-top:0">Costo directo</h3>
+      <table class="ref" style="margin:0">
+        <tr><td>Madera (0.06 m² × 191.4)</td><td class="n">S/ 11.5</td></tr>
+        <tr><td>Aceite (0.12 m² × 16)</td><td class="n">S/ 2.0</td></tr>
+        <tr><td>Colgador + caja + papel + tarjeta</td><td class="n">S/ 14.0</td></tr>
+        <tr><td><b>CNC tercerizado</b> (grabado)</td><td class="n">S/ 3.0</td></tr>
+        <tr><td>Mano de obra taller (0.073 × 120)</td><td class="n">S/ 8.8</td></tr>
+        <tr><td>Merma 5 %</td><td class="n">S/ 2.0</td></tr>
+        <tr><td style="font-weight:700;background:#eaf3f1">COSTO DIRECTO</td><td class="n" style="font-weight:700;background:#eaf3f1">S/ 41.3</td></tr>
+      </table>
+    </div>
+    <div class="box">
+      <h3 style="margin-top:0">Precio y margen ✅</h3>
+      <table class="ref" style="margin:0">
+        <tr><td>Precio de venta (con IGV)</td><td class="n">S/ 170</td></tr>
+        <tr><td>Precio neto (÷ 1.18)</td><td class="n">S/ 144.1</td></tr>
+        <tr><td>− Costo directo</td><td class="n">S/ 41.3</td></tr>
+        <tr><td style="font-weight:700;background:#eaf3f1">MARGEN</td><td class="n" style="font-weight:700;background:#eaf3f1">S/ 102.8 = 71 %</td></tr>
+        <tr><td>Regalía del autor (3 %)</td><td class="n">S/ 4.32 / u</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="why" style="font-size:10.5pt">
+    <b>El dato que decide todo:</b> de una sola plancha de S/ 485 salen <b>42 placas</b>, que valen
+    S/ 6,052 de venta neta — un multiplicador de <b>12.5× sobre el material</b>. Y como es personalizada,
+    <b>se cobra 100 % por adelantado</b>: cero inventario muerto, cero riesgo de capital. <em>Eso</em> es un
+    MVP ganador.
+  </div>
+
+  <h3>Checklist final — antes de entregar tu propuesta</h3>
+  <ul class="chk">
+    <li><span class="cb"></span>La idea está en el tablero del taller con mi nombre y la fecha</li>
+    <li><span class="cb"></span>Pasa los 4 filtros (repetible, sin medir, tiempo ocioso, hay mercado)</li>
+    <li><span class="cb"></span>Dibujo con 3 vistas y medidas en milímetros</li>
+    <li><span class="cb"></span>Despiece completo, pieza por pieza, con metros de canto</li>
+    <li><span class="cb"></span>Conté cuántas unidades salen de una plancha</li>
+    <li><span class="cb"></span>Hice una unidad de prueba y la <strong>cronometré</strong></li>
+    <li><span class="cb"></span>Costeé con precios reales — y pregunté los que no sabía</li>
+    <li><span class="cb"></span>Incluí el <strong>empaque</strong> en el costo</li>
+    <li><span class="cb"></span>Calculé el precio piso <strong>dividiendo</strong>, no multiplicando</li>
+    <li><span class="cb"></span>Traigo <strong>3 fotos de mercado</strong> con precio</li>
+    <li><span class="cb"></span>El margen pasa el umbral del canal</li>
+    <li><span class="cb"></span>La hoja del MVP (pág. 6) está completa y firmada</li>
+  </ul>
+
+  <p class="footer-note">Movadera SAC · Programa Impulso · Entrega esta propuesta antes de la Ronda Impulso
+  (último viernes del mes). Herramientas de apoyo: <b>hoja-de-costeo.html</b> (calcula solo) y la
+  <b>Guía del Creador</b> (versión extendida de este manual).</p>
+
+  <div class="page-num">pág. 7</div>
+</section>
+
+</body>
+</html>

@@ -11,14 +11,18 @@ $ErrorActionPreference = 'Stop'
 $origen  = 'C:\Users\jlmv6\Documents\Claude\Impulso Base Business'
 $destino = Split-Path -Parent $MyInvocation.MyCommand.Path
 
-$archivos = @('hoja-de-costeo.html', 'calculadora-regalias.html')
+$archivos = @(
+    @{src='hoja-de-costeo.html';           dst='hoja-de-costeo.html'},
+    @{src='calculadora-regalias.html';     dst='calculadora-regalias.html'},
+    @{src='Manual-Presentacion-Propuestas.html'; dst='manual.html'}
+)
 
 Write-Host "Copiando herramientas desde la carpeta de trabajo..." -ForegroundColor Cyan
 foreach ($a in $archivos) {
-    $src = Join-Path $origen $a
-    if (-not (Test-Path $src)) { Write-Host "  ! No se encontro $a" -ForegroundColor Yellow; continue }
-    Copy-Item $src (Join-Path $destino $a) -Force
-    Write-Host "  OK $a" -ForegroundColor Green
+    $src = Join-Path $origen $a.src
+    if (-not (Test-Path $src)) { Write-Host "  ! No se encontro $($a.src)" -ForegroundColor Yellow; continue }
+    Copy-Item $src (Join-Path $destino $a.dst) -Force
+    Write-Host "  OK $($a.src) -> $($a.dst)" -ForegroundColor Green
 }
 
 Set-Location $destino

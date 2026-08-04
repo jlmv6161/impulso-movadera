@@ -122,25 +122,27 @@
 
 <!-- 3 -->
 <section>
-  <h2><span class="num">3</span>Canto, herrajes e insumos</h2>
+  <h2><span class="num">3</span>Proveedores, canto e insumos</h2>
   <div class="tip">
     <b>El error que más mata propuestas:</b> olvidar lo chico. Cola, tornillos, lija, embalaje y flete
     suman entre 3 % y 8 % del costo. Si un precio no lo sabes, <b>pregúntalo — no lo inventes</b>.
     Un ítem que se usa a medias se pone como fracción (0.3 tubo de FIXALL).
+    <br><b>Aquí también va el CNC tercerizado:</b> como el ruteado no lo hace el taller, es un costo de
+    proveedor. Cotízalo por plancha (~S/ 90–150) y repártelo entre las piezas que salen de ella.
   </div>
   <table>
     <thead><tr><th style="width:42%">Ítem</th><th class="n">Cantidad</th><th class="n">Precio unit. S/</th><th class="n">Subtotal</th><th></th></tr></thead>
     <tbody id="tbItems"></tbody>
   </table>
   <datalist id="dlItems">
-    <option value="Tapacanto (ml)"><option value="Bisagra Ducasse 3D (par) — S/ 9"><option value="Corredera telescópica (par) — S/ 10–26">
-    <option value="Tirador"><option value="Soporte oculto / tarugos"><option value="FIXALL Soudal (tubo) — S/ 29">
-    <option value="Sellador acrílico — S/ 12"><option value="Cola / tornillos"><option value="Lija">
+    <option value="CNC tercerizado (por plancha / pieza)"><option value="Tapacanto (ml)"><option value="Bisagra Ducasse 3D (par) — S/ 9">
+    <option value="Corredera telescópica (par) — S/ 10–26"><option value="Tirador"><option value="Soporte oculto / tarugos">
+    <option value="FIXALL Soudal (tubo) — S/ 29"><option value="Sellador acrílico — S/ 12"><option value="Cola / tornillos"><option value="Lija">
     <option value="Pintura / laca (por m² de cara)"><option value="Thinner 3L — S/ 18"><option value="Waype (kg) — S/ 10">
     <option value="Embalaje (cartón, film, etiqueta)"><option value="Flete repartido entre el lote">
   </datalist>
   <button class="add" onclick="addItem()">+ Agregar ítem</button>
-  <div class="sum"><span>Total canto, herrajes e insumos</span><span id="sumItems">S/ 0.00</span></div>
+  <div class="sum"><span>Total proveedores, canto e insumos</span><span id="sumItems">S/ 0.00</span></div>
 </section>
 
 <!-- 4 -->
@@ -152,10 +154,15 @@
     pon abajo cuántas unidades hiciste: cortar 10 piezas juntas no demora 10 veces lo que una.
     Muchos productos <b>solo tienen margen si se hacen en lote</b>.
   </div>
+  <div class="tip" style="background:#FBF3E2;border-left-color:#B7791F;color:#6B5314">
+    <b>El corte / ruteado CNC NO va aquí.</b> El CNC <b>se terceriza</b> (no lo hace el taller), así que
+    es un <b>costo de proveedor</b> → ponlo en el Paso 3 como ítem, no como fase de tiempo. En esta tabla
+    van solo las fases que hace el equipo con sus manos (canteado, armado, lijado, acabado, empaque).
+  </div>
   <label>¿Cuántas unidades hiciste en la prueba que estás cronometrando?</label>
   <input id="f_lote" type="number" value="1" style="max-width:200px">
   <table>
-    <thead><tr><th style="width:52%">Fase</th><th class="n">Minutos del lote</th><th class="n">Min / unidad</th><th></th></tr></thead>
+    <thead><tr><th style="width:52%">Fase (solo trabajo del taller)</th><th class="n">Minutos del lote</th><th class="n">Min / unidad</th><th></th></tr></thead>
     <tbody id="tbTiempos"></tbody>
   </table>
   <button class="add" onclick="addTiempo()">+ Agregar fase</button>
@@ -304,7 +311,7 @@ const UMBRAL = {directa:.55, b2b:.45, retail:.30};
 const PLANCHAS = [
   ['Melamina 18 mm blanca', 180], ['Melamina 18 mm blanca RH', 300],
   ['Melamina 18 mm color', 300], ['Melamina 18 mm color RH', 350],
-  ['Fingerjoint pino', 200], ['Fingerjoint shihuahuaco', 390],
+  ['Fingerjoint pino', 200], ['Fingerjoint shihuahuaco (390 + IGV)', 460],
   ['Retazos / sobrantes', 0], ['Otro (escribir precio)', 0]
 ];
 
@@ -469,8 +476,8 @@ function cargar(){
 }
 function inicial(){
   addTablero();
-  ['Tapacanto (ml)','Herrajes / soportes','Cola, tornillos, lija','Embalaje'].forEach(i=>addItem(i,'',''));
-  ['Corte','Canteado','Perforado / ruteo','Armado','Acabado','Lijado y limpieza','Embalaje'].forEach(f=>addTiempo(f));
+  ['CNC tercerizado (por plancha / pieza)','Tapacanto (ml)','Herrajes / soportes','Cola, tornillos, lija','Embalaje'].forEach(i=>addItem(i,'',''));
+  ['Canteado','Perforado / armado','Lijado y limpieza','Acabado','Embalaje'].forEach(f=>addTiempo(f));
   addMercado(); addMercado(); addMercado();
   $('f_fecha').valueAsDate = new Date();
 }
