@@ -279,8 +279,6 @@
     <div class="line"><span>Margen en %</span><span id="rMargenPct">—</span></div>
     <div class="line"><span>Tu regalía (3 % del precio sin IGV)</span><span id="rRegalia">S/ 0.00</span></div>
     <div class="line"><span>Tu regalía al mes (<span id="rUnid">0</span> unidades)</span><span id="rRegaliaMes">S/ 0.00</span></div>
-    <div class="line"><span>Margen para Movadera al mes</span><span id="rMargenMes">S/ 0.00</span></div>
-    <div class="line"><span>Aporte a los costos fijos (S/ 16,700)</span><span id="rFijos">—</span></div>
   </div>
   <div id="verdict" class="verdict ok"></div>
 </section>
@@ -440,16 +438,14 @@ function calc(){
   $('rRegalia').textContent = S(reg);
   $('rUnid').textContent = unid;
   $('rRegaliaMes').textContent = S(reg*unid);
-  $('rMargenMes').textContent = S((margen-reg)*unid);
-  $('rFijos').textContent = (((margen-reg)*unid)/FIJOS*100).toFixed(0) + ' % de los fijos del mes';
 
   const v = $('verdict');
   if (costo <= 0){
     v.className='verdict ok'; v.innerHTML = 'Completa los pasos 2, 3 y 4 para ver el resultado.';
   } else if (pct >= m){
     v.className = 'verdict ok';
-    v.innerHTML = `✓ PASA — margen ${(pct*100).toFixed(1)} %<span class="sub">`+
-      `Movadera se queda con ${S(margen-reg)} por unidad. Tu regalía: ${S(reg)} por unidad, ${S(reg*unid)} al mes. Preséntalo.</span>`;
+    v.innerHTML = `✓ PASA — tu margen es ${(pct*100).toFixed(1)} % (mínimo ${(m*100)} %)<span class="sub">`+
+      `Tu regalía: ${S(reg)} por unidad, ${S(reg*unid)} al mes. ¡Preséntalo!</span>`;
   } else {
     const faltaPrecio = costo/div*1.18, bajaCosto = costo - neto*div;
     v.className = 'verdict bad';
