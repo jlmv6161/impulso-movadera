@@ -593,17 +593,26 @@ Directa: ÷ 0.45  (55%)      B2B: ÷ 0.55  (45%)      Retail: ÷ 0.70  (30%)</di
   }
 
   const setInd = t => { const i=$('m-saveind'); if(i) i.textContent=t; };
-  let PID=null, READONLY=false, saveT=null;
+  let PID=null, READONLY=false, saveT=null, dirty=false, inited=false;
+  const lkey = () => 'impulso.manual.backup.' + PID;
   async function persist(){
     if(READONLY||!PID) return;
-    try{ await ImpulsoStore.saveManual(PID, serialize()); setInd('Guardado ✓'); }
-    catch(e){ setInd('⚠ sin conexión — se guardará al reconectar'); }
+    dirty=false;
+    const data = serialize();
+    try{ localStorage.setItem(lkey(), JSON.stringify(data)); }catch(_){}     // respaldo local instantáneo
+    try{ await ImpulsoStore.saveManual(PID, data); setInd('Guardado ✓'); }
+    catch(e){ dirty=true; setInd('⚠ Sin conexión — guardado local, subirá al reconectar'); }
   }
-  function autosave(){ if(READONLY) return; setInd('Guardando…'); clearTimeout(saveT); saveT=setTimeout(persist,700); }
+  function autosave(){ if(READONLY) return; dirty=true; setInd('Guardando…'); clearTimeout(saveT); saveT=setTimeout(persist,700); }
+  function guardarYa(){ if(READONLY) return; clearTimeout(saveT); persist(); }
+  function flush(){ if(READONLY||!dirty) return; clearTimeout(saveT); persist(); }
+  window.addEventListener('pagehide', flush);
+  document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='hidden') flush(); });
 
   function habilitarEdicion(){
-    campos.forEach(el=>{ el.setAttribute('contenteditable','true'); el.addEventListener('input', autosave); });
-    checks.forEach(el=>el.addEventListener('click', ()=>{ el.classList.toggle('on'); autosave(); }));
+    campos.forEach(el=>{ el.setAttribute('contenteditable','true'); el.addEventListener('input', autosave); el.addEventListener('blur', guardarYa); });
+    checks.forEach(el=>el.addEventListener('click', ()=>{ el.classList.toggle('on'); guardarYa(); }));
+    $('backlink').addEventListener('click', async e=>{ e.preventDefault(); const url=$('backlink').href; clearTimeout(saveT); await persist(); location.href=url; });
   }
   function soloLectura(){
     READONLY=true; document.body.classList.add('readonly'); setInd('Modo lectura (admin)');
@@ -612,6 +621,7 @@ Directa: ÷ 0.45  (55%)      B2B: ÷ 0.55  (45%)      Retail: ÷ 0.70  (30%)</di
   /* ---- arranque: sesión + proyecto ---- */
   ImpulsoStore.onAuth(async user=>{
     if(!user){ location.replace('index.html'); return; }
+    if(inited) return; inited=true;      // no re-inicializar en refresco de sesión
     const params=new URLSearchParams(location.search);
     PID = params.get('p') || ImpulsoStore.getActiveProject();
     if(!PID){ location.replace('index.html'); return; }
@@ -623,7 +633,9 @@ Directa: ÷ 0.45  (55%)      B2B: ÷ 0.55  (45%)      Retail: ÷ 0.70  (30%)</di
     $('m-projname').textContent = proj.nombre + (soyDueno?'':' · '+(proj.ownerNombre||''));
     $('backlink').textContent = soyDueno ? '← Volver al proyecto' : '← Volver al panel';
     $('backlink').href = 'index.html' + (soyDueno?('?p='+PID):'');
-    restore(await ImpulsoStore.loadManual(PID));
+    let d = await ImpulsoStore.loadManual(PID);
+    if(!d){ try{ const b=localStorage.getItem(lkey()); if(b){ d=JSON.parse(b); setTimeout(guardarYa,1200); } }catch(_){} }
+    restore(d);
     if(soyDueno) habilitarEdicion(); else soloLectura();
   });
 })();

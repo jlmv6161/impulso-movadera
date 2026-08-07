@@ -473,20 +473,34 @@ function estado(){
 }
 
 const setInd = t => { const i=$('saveind'); if(i) i.textContent=t; };
-let _saveT=null;
+const lkey = () => 'impulso.costeo.backup.' + PID;
+let _saveT=null, _dirty=false;
 async function persist(){
   if(READONLY) return;
-  try{ await ImpulsoStore.saveCosteo(PID, estado()); setInd('Guardado ✓'); }
-  catch(e){ setInd('⚠ sin conexión — se guardará al reconectar'); }
+  _dirty=false;
+  const data = estado();
+  try{ localStorage.setItem(lkey(), JSON.stringify(data)); }catch(_){}     // respaldo local instantáneo
+  try{ await ImpulsoStore.saveCosteo(PID, data); setInd('Guardado ✓'); }
+  catch(e){ _dirty=true; setInd('⚠ Sin conexión — guardado local, subirá al reconectar'); }
 }
-function autosave(){ if(READONLY) return; setInd('Guardando…'); clearTimeout(_saveT); _saveT=setTimeout(persist,600); }
+function autosave(){ if(READONLY) return; _dirty=true; setInd('Guardando…'); clearTimeout(_saveT); _saveT=setTimeout(persist,700); }
+function guardarYa(){ if(READONLY) return; clearTimeout(_saveT); persist(); }
+function flush(){ if(READONLY||!_dirty) return; clearTimeout(_saveT); persist(); }
+window.addEventListener('pagehide', flush);
+document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='hidden') flush(); });
 async function limpiar(){
   if(READONLY) return;
-  if(confirm('¿Vaciar los datos de ESTE proyecto y empezar de nuevo?')){ await ImpulsoStore.saveCosteo(PID,null); location.reload(); }
+  if(confirm('¿Vaciar los datos de ESTE proyecto y empezar de nuevo?')){
+    try{ localStorage.removeItem(lkey()); }catch(_){}
+    await ImpulsoStore.saveCosteo(PID,null); location.reload();
+  }
 }
 
 async function cargarDatos(){
-  const d = await ImpulsoStore.loadCosteo(PID);
+  let d = await ImpulsoStore.loadCosteo(PID);
+  if(!d){   // la nube no tiene datos: ¿hay respaldo local sin subir?
+    try{ const b=localStorage.getItem(lkey()); if(b){ d=JSON.parse(b); setTimeout(guardarYa,1200); } }catch(_){}
+  }
   if(!d){ inicial(); return; }
   Object.entries(d.campos||{}).forEach(([k,v])=>{ if($(k)) $(k).value = v; });
   (d.tablero||[]).forEach(r=>{ addTablero(); const tr=$('tbTablero').lastElementChild;
@@ -515,8 +529,11 @@ function aplicarReadonly(){
 }
 
 /* ---- arranque: espera sesión, valida acceso, carga ---- */
+let _inited=false;
 ImpulsoStore.onAuth(async user=>{
   if(!user){ location.replace('index.html'); return; }
+  if(_inited) return;                 // no re-inicializar en refresco de sesión (no pisar lo que escribe)
+  _inited=true;
   USER=user;
   PID = _params.get('p') || ImpulsoStore.getActiveProject();
   if(!PID){ location.replace('index.html'); return; }
@@ -531,8 +548,11 @@ ImpulsoStore.onAuth(async user=>{
   await cargarDatos();
   calc();
   if(soyDueno){
-    document.addEventListener('input',  ()=>{ calc(); autosave(); });
-    document.addEventListener('change', ()=>{ calc(); autosave(); });
+    document.addEventListener('input',  ()=>{ calc(); autosave(); });      // escribiendo → debounce
+    document.addEventListener('change', ()=>{ calc(); guardarYa(); });      // al soltar campo / elegir opción → guarda ya
+    $('backlink').addEventListener('click', async e=>{                      // al volver, guarda antes de navegar
+      e.preventDefault(); const url=$('backlink').href; clearTimeout(_saveT); await persist(); location.href=url;
+    });
   } else {
     aplicarReadonly();
   }
